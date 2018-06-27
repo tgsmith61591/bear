@@ -1,0 +1,41 @@
+# Mac artifacts
+.DS_Store
+
+# Python stuff
+.ipynb_checkpoints
+__pycache__
+*.pyc
+scratch/
+
+# Tox testing (eventually)
+.tox
+
+# Build artifacts
+doc/_build
+doc/modules/generated
+doc/auto_examples
+build/
+dist/
+*.egg-info/
+.eggs/
+.cache/
+skoot/__config__.py
+*.so*
+*.pyd
+cythonize.dat
+
+# Test artifacts
+.pytest_cache/
+
+# fortran build wrappers
+skoot/decomposition/_dqrsl-f2pywrappers.f
+skoot/decomposition/_dqrslmodule.c
+
+# Coverage
+.coverage
+
+# pickled objects from demos
+*.pkl
+
+# pycharm
+.idea/

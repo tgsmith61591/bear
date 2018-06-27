@@ -1,0 +1,6 @@
+[run]
+source = bear
+include = */bear/*
+omit =
+    */bear/setup.py
+    */setup.py

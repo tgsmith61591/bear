@@ -1,0 +1,6 @@
+[run]
+source = {package_name}
+include = */{package_name}/*
+omit =
+    */{package_name}/setup.py
+    */setup.py

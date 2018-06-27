@@ -1,0 +1,30 @@
+{header}
+
+from __future__ import print_function, division, absolute_import
+
+import os
+
+
+# DEFINE CONFIG
+def configuration(parent_package='', top_path=None):
+    from numpy.distutils.misc_util import Configuration
+
+    libs = []
+    if os.name == 'posix':
+        libs.append('m')
+
+    config = Configuration('{package_name}', parent_package, top_path)
+
+    # This is where you'll add your submodules, e.g.:
+    # config.add_subpackage('utils')
+
+    # This is where you'll add your module tests -- must be added after the
+    # submodules were added above!
+    # config.add_subpackage('utils/tests')
+
+    return config
+
+
+if __name__ == '__main__':
+    from numpy.distutils.core import setup
+    setup(**configuration(top_path='').todict())
