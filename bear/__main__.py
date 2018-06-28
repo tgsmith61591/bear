@@ -7,9 +7,7 @@ from argparse import RawTextHelpFormatter
 
 import bear
 from bear.utils.io import read_write, copy_to
-from bear.utils.validation import (validate_project_name,
-                                   validate_requirements,
-                                   validate_path)
+from bear.utils.validation import validate_args
 
 import shutil
 import os
@@ -29,16 +27,23 @@ def make_package(author, description, email, git_user, license,
                  name, path, python, requirements, version, c, verbose):
     """Build the package.
 
+    For each template file in bear/templates, read the file in plain text,
+    format them with kwarg values and then write them into the new package
+    with the approprite suffix.
+
     Parameters
     ----------
     author : str or unicode
-        The author or the package
+        The author or the package. This is written in several places,
+        including the new project's setup.py.
 
     description : str or unicode
-        The description for the package
+        The description for the package. This is written into the new
+        project's setup.py.
 
     email : str or unicode
-        The author email
+        The author email. This is written into the project's setup.py to
+        be searchable on pypi.
 
     git_user : str or unicode
         The git username of the author.
@@ -150,36 +155,6 @@ def make_package(author, description, email, git_user, license,
     read_write(join(trav_level, "test_script.txt"),
                write_to_dir=travis, suffix=".sh", verbose=verbose,
                package_name=name)
-
-
-def validate_args(args):
-    """Get the validated args.
-
-    Returns
-    -------
-    args : dict
-        A dictionary of validated arguments.
-    """
-    # The project name is the only real required value
-    nm = validate_project_name(args.project_name)
-
-    # Validate requirements, if any...
-    req = validate_requirements(args.requirements)
-
-    # Validate path
-    path = validate_path(args.path, nm)
-    return dict(author=args.author,
-                c=args.c,
-                description=args.description,
-                email=args.email,
-                git_user=args.git_user,
-                license=args.license,
-                name=nm,
-                path=path,
-                python=args.python_requires,
-                requirements=req,
-                verbose=args.verbose,
-                version=args.version)
 
 
 if __name__ == "__main__":

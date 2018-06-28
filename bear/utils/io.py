@@ -13,12 +13,23 @@ __all__ = [
 
 
 def copy_to(copy_from_file, write_to_dir, verbose):
-    """
+    """Copy a template file elsewhere.
 
-    :param copy_from_file:
-    :param write_to_dir:
-    :param verbose:
-    :return:
+    This executes a ``cp`` on a file into a new directory leaving the
+    original file intact.
+
+    Parameters
+    ----------
+    copy_from_file : str or unicode
+        The absolute path to the file that will be copied from the bear
+        templates directory.
+
+    write_to_dir : str or unicode
+        The absolute path to the file that will be written in the new
+        python package.
+
+    verbose : bool
+        Whether to print what's being written.
     """
     # Get the filename
     file_name = copy_from_file.split(os.sep)[-1]

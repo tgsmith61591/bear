@@ -2,19 +2,58 @@
 
 from __future__ import absolute_import
 
+import six
 import os
 
 __all__ = [
+    'validate_args',
     'validate_path',
     'validate_project_name',
     'validate_requirements'
 ]
 
 
+def validate_args(args):
+    """Get the validated args.
+
+    The project name is validated to be non-null and not contain illegal
+    characters, the requirements are validated, and the path is validated
+    to end with the ``name`` parameter.
+
+    Returns
+    -------
+    vargs : dict
+        A dictionary of validated arguments.
+    """
+    # The project name is the only real required value
+    nm = validate_project_name(args.project_name)
+
+    # Validate requirements, if any...
+    req = validate_requirements(args.requirements, args.c)
+
+    # Validate path
+    path = validate_path(args.path, nm)
+
+    return dict(author=args.author,
+                c=args.c,
+                description=args.description,
+                email=args.email,
+                git_user=args.git_user,
+                license=args.license,
+                name=nm,
+                path=path,
+                python=args.python_requires,
+                requirements=req,
+                verbose=args.verbose,
+                version=args.version)
+
+
 def validate_path(path, name):
     """Validate the location where the path will be written.
 
-    Make sure the path is legal.
+    Make sure the path is legal. If the path is not truthy, set it to "."
+    (here). Next, if the path does not end with the ``name``, set the path
+    to end with ``name``.
 
     Parameters
     ----------
@@ -75,7 +114,7 @@ def validate_project_name(name):
     return name
 
 
-def validate_requirements(req):
+def validate_requirements(req, cython_required):
     """Validate the package requirements.
 
     Validate and format the package requirements to get a new-line separated
@@ -89,6 +128,10 @@ def validate_requirements(req):
         The requirements. Should be a comma-separated list of requirements
         that will be written to 'requirements.txt' split across new lines.
 
+    cython_required : bool
+        Whether cython is required to build the project. If so, it will be
+        validated that cython exists in the requirements.
+
     Returns
     -------
     new_requirements : str or unicode
@@ -101,18 +144,26 @@ def validate_requirements(req):
         for token in req.replace(os.linesep, ",").split(",")
     ]
 
-    # Validate that numpy is present, and if not we'll use 1.12 as a floor
-    numpy_found = False
-    new_requirements = []  # filter out non truthy ones in this pass also
+    # Hard requirements. Numpy is ALWAYS required, but cython is only if
+    # cython_required
+    hard_requirements = dict(numpy=">=1.12")
+    if cython_required:
+        hard_requirements['cython'] = '>=0.23'
+
+    # For each requirement, determine whether it's in the hard requirements
+    new_requirements = []
     for req in requirements:
-        if req.lower().startswith("numpy"):
-            numpy_found = True
+        # Re-assign the hard-requirements ref to remove the ones that are
+        # already present
+        hard_requirements = {pkg: ver
+                             for pkg, ver in six.iteritems(hard_requirements)
+                             if not req.lower().startswith(pkg)}
         # Filter out the non-truthy ones
         if not req:
             continue
         else:
             new_requirements.append(req)
-    # if it's not there, add it
-    if not numpy_found:
-        new_requirements.append("numpy>=1.12")
+    # if there are still requirements, append them
+    for k, v in six.iteritems(hard_requirements):
+        new_requirements.append(k + v)
     return os.linesep.join(new_requirements)

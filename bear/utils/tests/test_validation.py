@@ -46,11 +46,12 @@ def test_validate_project_name():
 
 def test_validate_requirements():
     # Test for None first
-    req = validate_requirements(None)
+    req = validate_requirements(None, False)
     assert isinstance(req, six.string_types), type(req)
     assert req == "numpy>=1.12", req
 
     # Test for existing reqs
-    req = validate_requirements("a>=1, g, b<3")
+    req = validate_requirements("a>=1, g, b<3", True)
     assert "numpy>=1.12" in req
-    assert req.split() == ['a>=1', 'g', 'b<3', 'numpy>=1.12'], req.split()
+    assert sorted(req.split()) == \
+           ['a>=1', 'b<3', 'cython>=0.23', 'g', 'numpy>=1.12'], req.split()
