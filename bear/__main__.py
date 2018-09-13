@@ -146,8 +146,8 @@ def make_package(author, description, email, git_user, license,
     copy_to(join(trav_level, "build_wheels.sh"),
             write_to_dir=travis, verbose=verbose)
 
-    copy_to(join(trav_level, "install.sh"),
-            write_to_dir=travis, verbose=verbose)
+    read_write(join(trav_level, "install.txt"), write_to_dir=travis,
+               suffix='.sh', verbose=verbose, c="true" if c else "false")
 
     copy_to(join(trav_level, "setup.cfg"),
             write_to_dir=travis, verbose=verbose)

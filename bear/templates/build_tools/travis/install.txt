@@ -50,6 +50,12 @@ if [[ "$DISTRIB" == "conda" ]]; then
         TO_INSTALL="$TO_INSTALL nomkl"
     fi
 
+    # This is a hack, and a result of the way Bear auto-generates this script
+    # if C is required. '{c}' is formatted in by the __main__
+    if [[ "{c}" == "true" ]]; then
+        TO_INSTALL="$TO_INSTALL cython"
+    fi
+
     conda create -n testenv --yes $TO_INSTALL
     source activate testenv
 
