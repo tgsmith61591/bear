@@ -3,4 +3,7 @@ recursive include bear/templates/build_tools/travis *.txt *.sh *.cfg
 recursive include bear/templates/doc *
 recursive include bear/templates/examples *.txt
 recursive include bear/templates/package_level *.txt
+recursive include bear/templates/package_level/__check_build *.txt
+recursive include bear/templates/package_level/__check_build/tests *.txt
+recursive include bear/templates/package_level/_build_utils *.txt
 recursive include bear/templates/project_level *

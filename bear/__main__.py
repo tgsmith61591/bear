@@ -118,11 +118,58 @@ def make_package(author, description, email, git_user, license,
                version=version, package_name_upper=name.upper(),
                package_name=name)
 
+    # If we are using Cython, then we will not comment out the cythonization
+    # lines. Otherwise we will.
     read_write(join(pkg_level, "setup.txt"), write_to_dir=package,
                suffix=".py", verbose=verbose, header=header,
-               package_name=name)
+               package_name=name,
 
-    # TODO: for a C project, include the __check_build dir that scikit does
+               # Insert a comment in front of cython lines if not using cython
+               comment_for_no_c="# " if not c else "")
+
+    # If we're depending on building C code, we need to create the
+    # __check_build and _build_utils submodules
+    if c:
+        cb_template = join(pkg_level, "__check_build")
+        check_build = join(package, "__check_build")
+        os.mkdir(check_build)
+
+        read_write(join(cb_template, "__init__.txt"),
+                   write_to_dir=check_build, suffix=".py",
+                   verbose=verbose,
+                   package_name=name)
+
+        # For the files we just want to copy...
+        for copyfile in ("_check_build.pyx", "setup.py"):
+            copy_to(join(cb_template, copyfile),
+                    write_to_dir=check_build,
+                    verbose=verbose)
+
+        # We also want the test directory
+        cb_tests_template = join(cb_template, "tests")
+        check_build_tests = join(check_build, "tests")
+        os.mkdir(check_build_tests)
+
+        # Move the __init__ file
+        copy_to(join(cb_tests_template, "__init__.py"),
+                write_to_dir=check_build_tests,
+                verbose=verbose)
+
+        # Format the test script itself and put it
+        read_write(join(cb_tests_template, "test_check_build.txt"),
+                   write_to_dir=check_build_tests, suffix=".py",
+                   verbose=verbose,
+                   package_name=name)
+
+        # Now move over the _build_utils stuff
+        bu_template = join(pkg_level, "_build_utils")
+        build_utils = join(package, "_build_utils")
+        os.mkdir(build_utils)
+
+        read_write(join(bu_template, "__init__.txt"),
+                   write_to_dir=build_utils, suffix=".py",
+                   verbose=verbose,
+                   package_name=name)
 
     # Create the examples directory
     examples = join(path, "examples")
@@ -157,6 +204,8 @@ def make_package(author, description, email, git_user, license,
     read_write(join(trav_level, "test_script.txt"),
                write_to_dir=travis, suffix=".sh", verbose=verbose,
                package_name=name)
+
+    # TODO: someday do the doc level
 
 
 if __name__ == "__main__":
