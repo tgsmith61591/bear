@@ -149,7 +149,7 @@ class CleanCommand(clean):
                     shutil.rmtree(os.path.join(dirpath, dirname))
 
 
-cmdclass = dict('clean'=CleanCommand)
+cmdclass = dict(clean=CleanCommand)
 
 
 def configuration(parent_package='', top_path=None):

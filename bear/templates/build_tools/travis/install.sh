@@ -43,7 +43,7 @@ if [[ "$DISTRIB" == "conda" ]]; then
     export PATH=$MINICONDA_PATH/bin:$PATH
     conda update --yes conda
 
-    TO_INSTALL="python=$PYTHON_VERSION pip pytest pytest-cov"
+    TO_INSTALL="python=$PYTHON_VERSION numpy pip pytest pytest-cov"
     if [[ "$INSTALL_MKL" == "true" ]]; then
         TO_INSTALL="$TO_INSTALL mkl"
     else
