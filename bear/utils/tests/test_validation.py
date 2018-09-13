@@ -40,6 +40,8 @@ def test_validate_project_name():
     assert_bad_name("")
     assert_bad_name("bad\nname")
     assert_bad_name("bad" + os.sep + "name")
+    assert_bad_name("..")
+    assert_bad_name(".")
 
     assert validate_project_name("GoodName") == "GoodName"
 

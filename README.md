@@ -1,4 +1,4 @@
-# bear
+# :grapes: bear
 
 *Create more. Innovate more easily. Bear fruit more quickly.*
 

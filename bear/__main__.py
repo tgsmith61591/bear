@@ -122,6 +122,8 @@ def make_package(author, description, email, git_user, license,
                suffix=".py", verbose=verbose, header=header,
                package_name=name)
 
+    # TODO: for a C project, include the __check_build dir that scikit does
+
     # Create the examples directory
     examples = join(path, "examples")
     os.mkdir(examples)

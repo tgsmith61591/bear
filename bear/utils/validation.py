@@ -72,7 +72,9 @@ def validate_path(path, name):
     if not path:
         path = "."
 
-    # if the path doesn't end with 'name', make it
+    # if the path doesn't end with 'name', make it. We have also already
+    # validated that the name is not '.' or '..' so we don't get './.' or
+    # anything dangerous
     if not path.endswith(name):
         path = os.path.join(path, name)
 
@@ -102,8 +104,13 @@ def validate_project_name(name):
     if not name:
         raise ValueError("'project_name' is a required argument!")
 
+    # If the name is '.' or any variant therein... we need to raise
+    sname = set(name)
+    if sname == {'.'}:
+        raise ValueError("Cannot set 'project_name' to %s" % name)
+
     # If there are illegal values in the project name, raise
-    illegal_intersection = set(name).intersection({
+    illegal_intersection = sname.intersection({
         os.sep, os.linesep, os.pathsep, os.path.sep,
     })
 
