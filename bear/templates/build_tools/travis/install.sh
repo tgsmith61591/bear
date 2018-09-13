@@ -74,12 +74,10 @@ fi
 # now run the python setup. This implicitly builds all the C code with build_ext
 python setup.py develop
 
-# Build pyramid in the install.sh script to collapse the verbose
+# Build package in the install.sh script to collapse the verbose
 # build output in the travis output when it succeeds.
 python --version
 python -c "import numpy; print('numpy %s' % numpy.__version__)"
-python -c "import scipy; print('scipy %s' % scipy.__version__)"
-python -c "import sklearn; print('sklearn %s' % sklearn.__version__)"
 python -c "\
 try:
     import pandas

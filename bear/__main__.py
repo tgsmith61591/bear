@@ -19,7 +19,7 @@ bear_location = bear.package_location()
 
 # The header we'll write to the top of all the python files
 header = """# -*- coding: utf-8 -*-
-# Auto-generated with bear v%s
+# Auto-generated with bear v%s, (c) Taylor G Smith
 """ % bear_version
 
 
