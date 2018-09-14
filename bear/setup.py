@@ -18,10 +18,12 @@ def configuration(parent_package='', top_path=None):
     config = Configuration('bear', parent_package, top_path)
 
     # modules
+    config.add_subpackage('core')
     config.add_subpackage('templates')
     config.add_subpackage('utils')
 
     # module tests -- must be added after others!
+    config.add_subpackage('core/tests')
     config.add_subpackage('templates/tests')
     config.add_subpackage('utils/tests')
     return config

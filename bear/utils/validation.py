@@ -34,18 +34,49 @@ def validate_args(args):
     # Validate path
     path = validate_path(args.path, nm)
 
+    # Validate the license
+    license = validate_license(args.license)
+
     return dict(author=args.author,
                 c=args.c,
                 description=args.description,
                 email=args.email,
                 git_user=args.git_user,
-                license=args.license,
+                license=license,
                 name=nm,
                 path=path,
                 python=args.python_requires,
                 requirements=req,
                 verbose=args.verbose,
                 version=args.version)
+
+
+def validate_license(license):
+    """Validate the license.
+
+    Make sure the provided license is one that exists within the
+    Bear templates.
+
+    Parameters
+    ----------
+    license : str or unicode
+        The name of the license to assign the package. Will raise if the
+        license does not exist.
+
+    Returns
+    -------
+    license : str or unicode
+        The name of the license.
+    """
+    # These are the names of the existing licenses
+    valid = {'BSD-3', 'GPL', 'MIT'}
+    license_u = license.upper()
+
+    if license_u not in valid:
+        raise ValueError("Expected license to be in %s, but got %s"
+                         % (str(valid), license))
+
+    return license_u
 
 
 def validate_path(path, name):

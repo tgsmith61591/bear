@@ -2,9 +2,9 @@
 
 from __future__ import absolute_import
 
-from bear.utils.validation import (validate_path,
-                                   validate_project_name,
-                                   validate_requirements)
+from bear.utils.validation import validate_path, \
+    validate_project_name, validate_requirements, \
+    validate_license
 
 import pytest
 import shutil
@@ -57,3 +57,11 @@ def test_validate_requirements():
     assert "numpy>=1.12" in req
     assert sorted(req.split()) == \
            ['a>=1', 'b<3', 'cython>=0.23', 'g', 'numpy>=1.12'], req.split()
+
+
+def test_validate_license():
+    assert validate_license('bsd-3') == 'BSD-3'
+    assert validate_license('MIT') == 'MIT'
+
+    with pytest.raises(ValueError):
+        validate_license('bad license')

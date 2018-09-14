@@ -1,1 +1,1 @@
-recursive include {package_name}/*
+recursive-include {package_name}/ *

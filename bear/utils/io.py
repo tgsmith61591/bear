@@ -12,7 +12,7 @@ __all__ = [
 ]
 
 
-def copy_to(copy_from_file, write_to_dir, verbose):
+def copy_to(copy_from_file, write_to_dir, verbose=False):
     """Copy a template file elsewhere.
 
     This executes a ``cp`` on a file into a new directory leaving the
@@ -28,7 +28,7 @@ def copy_to(copy_from_file, write_to_dir, verbose):
         The absolute path to the file that will be written in the new
         python package.
 
-    verbose : bool
+    verbose : bool, optional (default=False)
         Whether to print what's being written.
     """
     # Get the filename
@@ -43,7 +43,8 @@ def copy_to(copy_from_file, write_to_dir, verbose):
     copyfile(copy_from_file, out_file_name)
 
 
-def read_write(read_from_file, write_to_dir, suffix, verbose, **kwargs):
+def read_write(read_from_file, write_to_dir, suffix=None, verbose=False,
+               overwrite_name=None, **kwargs):
     """Read a template and write it as a package file.
 
     Loads a bear template file, formats it with the provided args and then
@@ -59,11 +60,15 @@ def read_write(read_from_file, write_to_dir, suffix, verbose, **kwargs):
         The absolute path to the file that will be written in the new
         python package.
 
-    suffix : str, unicode or None
+    suffix : str, unicode or None, optional (default=None)
         The file extension for the new file that will be written.
 
-    verbose : bool
+    verbose : bool, optional (default=False)
         Whether to print what's being written.
+
+    overwrite_name : str, unicode or None, optional (default=None)
+        If you'd like to overwrite the name of the file, this is the parameter
+        you'd use. Note that this will override the ``suffix`` command.
 
     **kwargs : keyword args or dict
         The arguments used to format the file that's read in.
@@ -72,25 +77,30 @@ def read_write(read_from_file, write_to_dir, suffix, verbose, **kwargs):
     with open(read_from_file, "r") as read_in:
         content = read_in.read().format(**kwargs)
 
-    # Get the prefix of the file
-    file_name = read_from_file.split(os.sep)[-1]
+    if not overwrite_name:
+        # Get the prefix of the file
+        file_name = read_from_file.split(os.sep)[-1]
 
-    # If the suffix is None, get a blank string. Otherwise ensure it
-    # starts with a "."
-    suffix = "" if suffix is None \
-        else suffix if suffix.startswith(".") \
-        else "." + suffix
+        # If the suffix is None, get a blank string. Otherwise ensure it
+        # starts with a "."
+        suffix = "" if suffix is None \
+            else suffix if suffix.startswith(".") \
+            else "." + suffix
 
-    # Get the name of the file without an extension (if one is present)
-    last_dot_idx = file_name.rfind(".")
-    if last_dot_idx > 0:
-        # e.g., something.txt
-        file_no_extension = file_name[:last_dot_idx] + suffix
+        # Get the name of the file without an extension (if one is present)
+        last_dot_idx = file_name.rfind(".")
+        if last_dot_idx > 0:
+            # e.g., something.txt
+            file_no_extension = file_name[:last_dot_idx] + suffix
+        else:
+            # e.g., .coveragerc
+            file_no_extension = file_name
+
+        out_file_name = join(write_to_dir, file_no_extension)
+
+    # If we're overwriting, we'll just take the name that's given
     else:
-        # e.g., .coveragerc
-        file_no_extension = file_name
-
-    out_file_name = join(write_to_dir, file_no_extension)
+        out_file_name = join(write_to_dir, overwrite_name)
 
     # Print it if needed
     if verbose:
