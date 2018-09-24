@@ -44,7 +44,7 @@ header = """# -*- coding: utf-8 -*-
 """ % bear_version
 
 
-@make_and_cleanup_project_path(project_path=project_path)
+@make_and_cleanup_project_path(project_path, package_name)
 def test_create_project_level_no_c():
     # Operate as if the project dir exists, since decorator should handle it.
     _create_project_level(proj_level=project_level_templates,
@@ -57,6 +57,15 @@ def test_create_project_level_no_c():
                           license=license)
 
     # Now assert the files in interest exist
+    for filename in ('.coveragerc', '.gitignore', '.travis.yml',
+                     'LICENSE', 'MANIFEST.in', 'README.md',
+                     'requirements.txt', 'setup.py'):
+        assert os.path.exists(join(path, filename))  # TODO: HMMM?? should be in path?!
+
+    # The requirements should NOT have cython
+    with open(join(project_path, 'requirements.txt'), 'r') as reqs:
+        require = reqs.read().lower()
+        assert 'cython' not in require
 
 
 def test_create_project_level_with_c():

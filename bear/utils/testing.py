@@ -5,6 +5,7 @@
 from __future__ import absolute_import
 
 import os
+from os.path import join
 import shutil
 
 from functools import wraps
@@ -12,8 +13,8 @@ from functools import wraps
 __all__ = ['make_and_cleanup_project_path']
 
 
-def make_and_cleanup_project_path(project_path):
-    """Manage the project-level directory for tests.
+def make_and_cleanup_project_path(project_path, *subdirectories):
+    r"""Manage the project-level directory for tests.
 
     Create the project-level directory before running the test,
     and then clean it up after the test. This is all managed within a
@@ -25,6 +26,9 @@ def make_and_cleanup_project_path(project_path):
         The project-level directory for testing. This should not exist prior
         to the function call.
 
+    *subdirectories : varargs
+        The subdirectories to be created under ``project_path``.
+
     Notes
     -----
     Every file created should land inside of the ``project_path`` to ensure
@@ -34,12 +38,21 @@ def make_and_cleanup_project_path(project_path):
         @wraps(func)
         def test_wrapper(*args, **kwargs):
             assert not os.path.exists(project_path)
+
+            subdirs = [join(project_path, s) for s in subdirectories]
+            for subdir in subdirs:
+                assert not os.path.exists(subdir)
+
             try:
                 os.mkdir(project_path)
+                for subdir in subdirs:
+                    os.mkdir(subdir)
+
                 func(*args, **kwargs)
             finally:
                 # Always remove the project path to make sure it's gone if we
                 # failed somewhere along the way
                 shutil.rmtree(project_path)
+                assert not os.path.exists(project_path)
         return test_wrapper
     return func_wrapper
