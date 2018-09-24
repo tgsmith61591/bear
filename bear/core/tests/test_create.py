@@ -10,7 +10,6 @@ from bear.core.create import make_package, _create_project_level, \
 
 import os
 from os.path import join
-import shutil
 
 # Attrs of the bear package
 bear_location = bear.package_location()
@@ -32,11 +31,7 @@ author = "Fake Authorman"
 email = "some_email@fake.com"
 python = "3.5"
 git_user = "fakegituser"
-license = "MIT"
-
-# Requirements
-requirements_no_c = validate_requirements(None, False)
-requirements_with_c = validate_requirements(None, True)
+lic = "MIT"
 
 # Simple header we'll use
 header = """# -*- coding: utf-8 -*-
@@ -44,36 +39,111 @@ header = """# -*- coding: utf-8 -*-
 """ % bear_version
 
 
+def _project_assertions(c):
+    # Now assert the files in interest exist
+    for filename in ('.coveragerc', '.gitignore', '.travis.yml',
+                     'LICENSE', 'MANIFEST.in', 'README.md',
+                     'requirements.txt', 'setup.py'):
+        assert os.path.exists(join(path, filename))
+
+    # The requirements should NOT have cython
+    proj_dir = join(project_path, package_name)
+    with open(join(proj_dir, 'requirements.txt'),
+              'r') as reqs:
+        require = reqs.read().lower()
+        assert 'numpy' in require
+
+        # This is really the only piece that changes depending on C
+        if c:
+            assert 'cython' in require
+        else:
+            assert 'cython' not in require
+
+    # Show we correctly write the .coveragerc
+    with open(join(proj_dir, '.coveragerc'), 'r') as cov:
+        coverage = cov.read().lower()
+        assert '*/{package_name}/setup.py'.format(
+            package_name=package_name) in coverage
+
+
 @make_and_cleanup_project_path(project_path, package_name)
-def test_create_project_level_no_c():
+def create_project_level(c):
     # Operate as if the project dir exists, since decorator should handle it.
     _create_project_level(proj_level=project_level_templates,
                           path=path, verbose=True,
                           name=package_name, bear_version=bear_version,
                           description="A bear test package!",
-                          requirements=requirements_no_c,
+                          requirements=validate_requirements(None, c),
                           header=header, author=author, email=email,
-                          python=python, c=False, git_user=git_user,
-                          license=license)
+                          python=python, c=c, git_user=git_user,
+                          license=lic)
 
-    # Now assert the files in interest exist
-    for filename in ('.coveragerc', '.gitignore', '.travis.yml',
-                     'LICENSE', 'MANIFEST.in', 'README.md',
-                     'requirements.txt', 'setup.py'):
-        assert os.path.exists(join(path, filename))  # TODO: HMMM?? should be in path?!
+    # Modularize this so we can assert them from other areas as well
+    _project_assertions(c)
 
-    # The requirements should NOT have cython
-    with open(join(project_path, 'requirements.txt'), 'r') as reqs:
-        require = reqs.read().lower()
-        assert 'cython' not in require
+    # The package itself should NOT exist in there yet
+    proj_dir = join(project_path, package_name)
+    assert not os.path.exists(join(proj_dir, package_name))
 
 
-def test_create_project_level_with_c():
-    pass
+# Runs the above function TWICE
+def test_project_level_code():
+    for c in (True, False):
+        create_project_level(c)
 
 
-def test_create_package_level():
-    pass
+def _package_assertions(c):
+    # First, show the package level DOES exist
+    proj_level = join(project_path, package_name)
+    package_level = join(proj_level, package_name)
+    assert os.path.exists(package_level)
+
+    # these will always (should always) be there
+    assert os.path.exists(join(package_level, '__init__.py'))
+    assert os.path.exists(join(package_level, 'setup.py'))
+
+    # If c was required, we should have a __check_build and more...
+    if c:
+        assert os.path.exists(join(package_level, '__check_build'))
+        assert os.path.exists(join(package_level, '_build_utils'))
+
+    # If C, the __init__ will contain more
+    c_import = "from . import __check_build"
+    with open(join(package_level, '__init__.py'), 'r') as init:
+        _init = init.read()
+        if c:
+            assert c_import in _init
+        else:
+            assert c_import not in _init
+
+    # Same with the setup.py
+    with open(join(package_level, 'setup.py'), 'r') as stp:
+        setup = stp.read()
+
+        # For C, we expect the lines to be uncommented
+        uncommented_str = "config.add_subpackage('__check_build')"
+        commented_str = "# %s" % uncommented_str
+
+        # For no C, we expect this to be commented
+        if not c:
+            assert commented_str in setup
+        else:
+            assert commented_str not in setup and uncommented_str in setup
+
+
+@make_and_cleanup_project_path(project_path, package_name)
+def create_package_level(c):
+    _create_package_level(package_templates=pkg_level_templates,
+                          path=path, c=c, version=bear_version,
+                          verbose=True, name=package_name,
+                          header=header)
+
+    _package_assertions(c)
+
+
+def test_package_level_code():
+    for c in (True, False):
+        create_package_level(c)
 
 
 def test_create_examples_dir():
@@ -84,5 +154,22 @@ def test_create_ci_build_tools():
     pass
 
 
+# For this one, we'll just embed the package/project assertions, etc.
+@make_and_cleanup_project_path(project_path)
+def do_make_package(c):
+    make_package(header=header, bear_location=bear_location,
+                 bear_version=bear_version, author=author,
+                 description="Test project", email=email,
+                 git_user=git_user, license=lic,
+                 name=package_name, path=path,
+                 python=python, requirements=validate_requirements(None, c),
+                 version=bear_version, c=c, verbose=True)
+
+    # Co-op the other assertion functions
+    _project_assertions(c)
+    _package_assertions(c)
+
+
 def test_make_package():
-    pass
+    for c in (True, False):
+        do_make_package(c)

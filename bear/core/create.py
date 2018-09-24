@@ -137,7 +137,10 @@ def _create_package_level(package_templates, path, c, version, verbose,
     read_write(join(package_templates, "__init__.txt"), write_to_dir=package,
                suffix=".py", verbose=verbose, header=header,
                version=version, package_name_upper=name.upper(),
-               package_name=name)
+               package_name=name,
+
+               # If cython build, import the __check_build at the head
+               c="from . import __check_build" if c else "")
 
     # If we are using Cython, then we will not comment out the cythonization
     # lines. Otherwise we will.
@@ -366,7 +369,7 @@ def make_package(header, bear_location, bear_version,
         Whether to build in verbose mode.
     """
     # Make the path for the project
-    os.mkdir(path)
+    os.makedirs(path)
 
     # Project level
     templates = join(bear_location, "templates")
