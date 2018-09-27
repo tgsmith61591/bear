@@ -19,7 +19,7 @@ source pypy-env/bin/activate
 python --version
 which python
 
-pip install --extra-index https://antocuni.github.io/pypy-wheels/ubuntu numpy pytest
+pip install --extra-index https://antocuni.github.io/pypy-wheels/ubuntu numpy pytest pyyaml
 
 ccache -M 512M
 export CCACHE_COMPRESS=1

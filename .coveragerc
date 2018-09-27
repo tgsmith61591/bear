@@ -3,7 +3,6 @@ source = bear
 include = */bear/*
 omit =
     */bear/__init__.py
-    */bear/__main__.py
     */bear/setup.py
     */bear/templates/__init__.py
     */bear/templates/tests/__init__.py
