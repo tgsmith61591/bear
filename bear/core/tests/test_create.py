@@ -8,6 +8,7 @@ from bear.utils.validation import validate_requirements
 from bear.core.create import make_package, _create_project_level, \
     _create_package_level, _create_examples_dir, _create_ci_build_tools
 
+import pytest
 import os
 from os.path import join
 
@@ -86,12 +87,6 @@ def create_project_level(c):
     assert not os.path.exists(join(proj_dir, package_name))
 
 
-# Runs the above function TWICE
-def test_project_level_code():
-    for c in (True, False):
-        create_project_level(c)
-
-
 def _package_assertions(c):
     # First, show the package level DOES exist
     proj_level = join(project_path, package_name)
@@ -141,17 +136,83 @@ def create_package_level(c):
     _package_assertions(c)
 
 
-def test_package_level_code():
+def _examples_assertions(c):
+    # There's not much to assert here since it relies on the user to fill it
+    # in... but we can make minor assertions
+    examples_directory = join(project_path, package_name, "examples")
+    with open(join(examples_directory, "README.txt")) as rdme:
+        script = rdme.read()
+        assert "submodules in {package_name}".format(
+            package_name=package_name) in script
+
+
+@make_and_cleanup_project_path(project_path, package_name)
+def create_examples_level(c):
+    _create_examples_dir(examples_templates=example_level_templates,
+                         path=path, verbose=True, name=package_name)
+    _examples_assertions(c)
+
+
+def _ci_assertions(c):
+    build_tools = join(project_path, package_name, "build_tools")
+    circle_path = join(build_tools, "circle")
+    travis_path = join(build_tools, "travis")
+
+    # Circle first, because it's easy... assert that the build_test_pypy.sh
+    # file exists and that the package name was appropriately written in
+    assert os.path.exists(join(circle_path, "build_test_pypy.sh"))
+    with open(join(circle_path, "build_test_pypy.sh"), "r") as pypy_sh:
+        script = pypy_sh.read()
+        assert "python -m pytest {package_name}/".format(
+            package_name=package_name) in script, script
+
+        # If C, assert cython is in there
+        if c:
+            assert "Cython" in script
+        else:
+            assert "Cython" not in script
+
+    # Now Travis, which is a bit more convoluted
+    for f in ('after_success.sh', 'before_install.sh', 'before_script.sh',
+              'build_manywheels_linux.sh', 'build_wheels.sh', 'install.sh',
+              'setup.cfg', 'test_script.sh'):
+        assert os.path.exists(join(travis_path, f))
+
+    # Assert on some of the write outputs
+    with open(join(travis_path, 'after_success.sh')) as aftersuccess:
+        script = aftersuccess.read()
+        assert "rm -r {package_name}.egg-info/".format(
+            package_name=package_name) in script
+
+    # Assert that C is or is not required in some scripts
+    for f in ("before_install.sh", "install.sh"):
+        with open(join(travis_path, f)) as installscript:
+            script = installscript.read()
+            if c:
+                assert '"true" == "true"' in script
+            else:
+                assert '"false" == "true"' in script
+
+
+@make_and_cleanup_project_path(project_path, package_name)
+def create_ci_level(c):
+    _create_ci_build_tools(ci_templates=ci_level_templates, path=path,
+                           name=package_name, verbose=True, c=c,
+                           proj_level=project_level_templates)
+    _ci_assertions(c)
+
+
+# This is really the test runner grid. Runs each create function with
+# a different value of C (True or False)
+@pytest.mark.parametrize('func', [
+    create_project_level,
+    create_package_level,
+    create_examples_level,
+    create_ci_level
+])
+def test_respective_create_functions(func):
     for c in (True, False):
-        create_package_level(c)
-
-
-def test_create_examples_dir():
-    pass
-
-
-def test_create_ci_build_tools():
-    pass
+        func(c)
 
 
 # For this one, we'll just embed the package/project assertions, etc.

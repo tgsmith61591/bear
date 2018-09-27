@@ -10,8 +10,6 @@ set -e
 
 python --version
 python -c "import numpy; print('numpy %s' % numpy.__version__)"
-python -c "import scipy; print('scipy %s' % scipy.__version__)"
-python -c "import sklearn; print('sklearn %s' % sklearn.__version__)"
 python -c "\
 try:
     import pandas
@@ -38,7 +36,7 @@ run_tests() {
     if [[ "$COVERAGE" == "true" ]]; then
         TEST_CMD="$TEST_CMD --cov-config .coveragerc --cov skoot"
     fi
-    $TEST_CMD skoot
+    $TEST_CMD bear
 
     # go back again
     cd $OLDPWD
