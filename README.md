@@ -1,5 +1,11 @@
 # :grapes: bear
 
+[![Linux build status](https://travis-ci.org/tgsmith61591/bear.svg?branch=master)](https://travis-ci.org/tgsmith61591/bear)
+[![PyPy build](https://circleci.com/gh/tgsmith61591/bear.svg?style=svg)](https://circleci.com/gh/tgsmith61591/bear)
+[![codecov](https://codecov.io/gh/tgsmith61591/bear/branch/master/graph/badge.svg)](https://codecov.io/gh/tgsmith61591/bear)
+![Supported versions](https://img.shields.io/badge/python-2.7,3.5+-blue.svg)
+
+
 *Create more. Innovate more easily. Bear fruit more quickly.*
 
 Bear helps to structurally automate creating a python package and
