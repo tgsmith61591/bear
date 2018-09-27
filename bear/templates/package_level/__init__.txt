@@ -16,6 +16,7 @@ if __{package_name_upper}_SETUP__:
                       'the build process.\n')
     del _sys
 else:
+    {c}
     # Global namespace imports
     # Here, you'll import submodules from your package to make them importable
     # at the top level of the package. For instance, if you want to be able to

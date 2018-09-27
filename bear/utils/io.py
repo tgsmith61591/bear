@@ -11,6 +11,8 @@ __all__ = [
     'read_write'
 ]
 
+# TODO: eventually get logger rather than print
+
 
 def copy_to(copy_from_file, write_to_dir, verbose=False):
     """Copy a template file elsewhere.

@@ -4,7 +4,7 @@ from __future__ import absolute_import
 
 from bear.utils.validation import validate_path, \
     validate_project_name, validate_requirements, \
-    validate_license
+    validate_license, validate_args
 
 import pytest
 import shutil
@@ -65,3 +65,29 @@ def test_validate_license():
 
     with pytest.raises(ValueError):
         validate_license('bad license')
+
+
+class ArgSim(object):
+    # Simulate an Arguments object
+    def __init__(self, **kwargs):
+        for k, v in six.iteritems(kwargs):
+            setattr(self, k, v)
+
+
+def test_validate_args():
+    args = ArgSim(author="someone",
+                  c=False,
+                  description="",
+                  email="",
+                  git_user="",
+                  license="MIT",
+                  path=".",
+                  project_name="pname",
+                  python_requires=">=3.5",
+                  requirements=None,
+                  verbose=False,
+                  version="1.0.0")
+
+    # Just show it works, really
+    validated = validate_args(args)
+    assert "numpy" in validated['requirements']
