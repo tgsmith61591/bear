@@ -6,10 +6,7 @@ import six
 import os
 
 __all__ = [
-    'validate_args',
-    'validate_path',
-    'validate_project_name',
-    'validate_requirements'
+    'validate_args'
 ]
 
 

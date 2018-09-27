@@ -52,6 +52,7 @@ if [[ "$DISTRIB" == "conda" ]]; then
 
     conda create -n testenv --yes $TO_INSTALL
     source activate testenv
+    pip install pyyaml
 
     # determine what platform is running
     python -c 'from distutils.util import get_platform; print(get_platform())'
