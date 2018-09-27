@@ -21,7 +21,7 @@ def parse_yaml(path, defaults):
         A dictionary of default arguments for the "create" method.
     """
     # The file must exist
-    if not os.path.exists(path):
+    if not path or not os.path.exists(path):
         raise OSError("Config file (%s) does not exist!" % path)
 
     # Open it, read it and parse it
@@ -34,5 +34,9 @@ def parse_yaml(path, defaults):
     for k, v in six.iteritems(defaults):
         if k not in parsed:
             parsed[k] = v
+
+    # For any of the "store_true" type values, we should have automatically
+    # parsed the bool... i.e., true -> True. However, "true" will not yield
+    # True, but "True" (the str). This is tested in bear/utils/tests/test_yaml
 
     return parsed

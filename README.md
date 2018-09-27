@@ -21,5 +21,5 @@ project (including doc, CI/CD pipelines, etc.). Bear streamlines that to allow
 you to move straight into the code-writing.
 
 ```bash
-$ python -m bear --name my_project
+$ python -m bear --project_name my_project
 ```

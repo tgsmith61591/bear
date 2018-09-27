@@ -10,6 +10,18 @@ __all__ = [
 ]
 
 
+def _getattr(obj, attr):
+    """Try to get the attribute as if the object is a Namespace, but if it
+    fails, get it as it if were a key from a dictionary. This allows us to
+    play nice with both Namespace objects (method='create') as well as
+    dicts (method='yaml')
+    """
+    try:
+        return getattr(obj, attr)
+    except AttributeError:
+        return obj[attr]  # may fail with KeyError or AttributeError (__get__)
+
+
 def validate_args(args):
     """Get the validated args.
 
@@ -23,29 +35,32 @@ def validate_args(args):
         A dictionary of validated arguments.
     """
     # The project name is the only real required value
-    nm = validate_project_name(args.project_name)
+    nm = validate_project_name(_getattr(args, 'project_name'))
 
     # Validate requirements, if any...
-    req = validate_requirements(args.requirements, args.c)
+    req = validate_requirements(_getattr(args, 'requirements'),
+                                _getattr(args, 'c'))
 
     # Validate path
-    path = validate_path(args.path, nm)
+    path = validate_path(_getattr(args, 'path'), nm)
 
     # Validate the license
-    license = validate_license(args.license)
+    license = validate_license(_getattr(args, 'license'))
 
-    return dict(author=args.author,
-                c=args.c,
-                description=args.description,
-                email=args.email,
-                git_user=args.git_user,
+    return dict(author=_getattr(args, 'author'),
+                c=_getattr(args, 'c'),
+                description=_getattr(args, 'description'),
+                email=_getattr(args, 'email'),
+                git_user=_getattr(args, 'git_user'),
                 license=license,
                 name=nm,
                 path=path,
-                python=args.python_requires,
+                python=_getattr(args, 'python'),
                 requirements=req,
-                verbose=args.verbose,
-                version=args.version)
+                verbose=_getattr(args, 'verbose'),
+                version=_getattr(args, 'version'),
+                travis=_getattr(args, 'travis'),
+                circle=_getattr(args, 'circle'))
 
 
 def validate_license(license):
