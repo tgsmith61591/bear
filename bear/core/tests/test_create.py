@@ -153,24 +153,9 @@ def create_examples_level(c):
     _examples_assertions(c)
 
 
-def _ci_assertions(c):
+def _travis_assertions(c):
     build_tools = join(project_path, package_name, "build_tools")
-    circle_path = join(build_tools, "circle")
     travis_path = join(build_tools, "travis")
-
-    # Circle first, because it's easy... assert that the build_test_pypy.sh
-    # file exists and that the package name was appropriately written in
-    assert os.path.exists(join(circle_path, "build_test_pypy.sh"))
-    with open(join(circle_path, "build_test_pypy.sh"), "r") as pypy_sh:
-        script = pypy_sh.read()
-        assert "python -m pytest {package_name}/".format(
-            package_name=package_name) in script, script
-
-        # If C, assert cython is in there
-        if c:
-            assert "Cython" in script
-        else:
-            assert "Cython" not in script
 
     # Now Travis, which is a bit more convoluted
     for f in ('after_success.sh', 'before_install.sh', 'before_script.sh',
@@ -194,25 +179,55 @@ def _ci_assertions(c):
                 assert '"false" == "true"' in script
 
 
+def _circle_assertions(c):
+    build_tools = join(project_path, package_name, "build_tools")
+    circle_path = join(build_tools, "circle")
+
+    # assert that the build_test_pypy.sh file exists and that
+    # the package name was appropriately written in
+    assert os.path.exists(join(circle_path, "build_test_pypy.sh"))
+    with open(join(circle_path, "build_test_pypy.sh"), "r") as pypy_sh:
+        script = pypy_sh.read()
+        assert "python -m pytest {package_name}/".format(
+            package_name=package_name) in script, script
+
+        # If C, assert cython is in there
+        if c:
+            assert "Cython" in script
+        else:
+            assert "Cython" not in script
+
+
+def _ci_assertions(c):
+    _circle_assertions(c)
+    _travis_assertions(c)
+
+
 @make_and_cleanup_project_path(project_path, package_name)
-def create_ci_level(c):
+def create_ci_both_true(c):
     _create_ci_build_tools(ci_templates=ci_level_templates, path=path,
                            name=package_name, verbose=True, c=c,
-                           proj_level=project_level_templates)
+                           proj_level=project_level_templates,
+                           travis=True, circle=True)
     _ci_assertions(c)
 
 
-# This is really the test runner grid. Runs each create function with
-# a different value of C (True or False)
-@pytest.mark.parametrize('func', [
-    create_project_level,
-    create_package_level,
-    create_examples_level,
-    create_ci_level
-])
-def test_respective_create_functions(func):
-    for c in (True, False):
-        func(c)
+@make_and_cleanup_project_path(project_path, package_name)
+def create_ci_only_travis(c):
+    _create_ci_build_tools(ci_templates=ci_level_templates, path=path,
+                           name=package_name, verbose=True, c=c,
+                           proj_level=project_level_templates,
+                           travis=True, circle=False)
+    _travis_assertions(c)
+
+
+@make_and_cleanup_project_path(project_path, package_name)
+def create_ci_only_circle(c):
+    _create_ci_build_tools(ci_templates=ci_level_templates, path=path,
+                           name=package_name, verbose=True, c=c,
+                           proj_level=project_level_templates,
+                           travis=False, circle=True)
+    _circle_assertions(c)
 
 
 # For this one, we'll just embed the package/project assertions, etc.
@@ -224,13 +239,27 @@ def do_make_package(c):
                  git_user=git_user, license=lic,
                  name=package_name, path=path,
                  python=python, requirements=validate_requirements(None, c),
-                 version=bear_version, c=c, verbose=True)
+                 version=bear_version, c=c, verbose=True,
+                 travis=True, circle=True)
 
     # Co-op the other assertion functions
     _project_assertions(c)
     _package_assertions(c)
+    _ci_assertions(c)
+    _examples_assertions(c)
 
 
-def test_make_package():
+# This is really the test runner grid. Runs each create function with
+# a different value of C (True or False)
+@pytest.mark.parametrize('func', [
+    create_project_level,
+    create_package_level,
+    create_examples_level,
+    create_ci_both_true,
+    create_ci_only_travis,
+    create_ci_only_circle,
+    do_make_package
+])
+def test_respective_create_functions(func):
     for c in (True, False):
-        do_make_package(c)
+        func(c)

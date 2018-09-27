@@ -196,7 +196,8 @@ def _create_package_level(package_templates, path, c, version, verbose,
                    package_name=name)
 
 
-def _create_ci_build_tools(ci_templates, path, name, verbose, c, proj_level):
+def _create_ci_build_tools(ci_templates, path, name, verbose, c, proj_level,
+                           travis, circle):
     """Create the CI build/test scripts.
 
     Builds CI scripts for Travis and Circle CI. Depending on the versions
@@ -225,6 +226,12 @@ def _create_ci_build_tools(ci_templates, path, name, verbose, c, proj_level):
 
     proj_level : str or unicode
         The project-level templates directory.
+
+    circle : bool
+        Whether to enable Circle CI tools
+
+    travis : bool
+        Whether to enable Travis CI tools
     """
     # Build the build_tools directory
     build_tools = join(path, "build_tools")
@@ -236,49 +243,55 @@ def _create_ci_build_tools(ci_templates, path, name, verbose, c, proj_level):
 
     # Start with Circle CI ----------------------------------------------------
     # Make the .circleci/config.yml first, then move over the build script
-    circleci = join(path, ".circleci")
-    os.mkdir(circleci)
+    if circle:
+        circleci = join(path, ".circleci")
+        os.mkdir(circleci)
 
-    copy_to(join(proj_level, ".circleci", "config.yml"),
-            write_to_dir=circleci, verbose=verbose)
+        copy_to(join(proj_level, ".circleci", "config.yml"),
+                write_to_dir=circleci, verbose=verbose)
 
-    # Read/write the build_tools/circle/build_test_pypy.sh
-    circle_target = join(build_tools, "circle")
-    os.mkdir(circle_target)
-    read_write(join(circle_level, "build_test_pypy.txt"),
-               write_to_dir=circle_target,
-               suffix=".sh", verbose=verbose,
-               package_name=name, c="" if not c else " Cython")
+        # Read/write the build_tools/circle/build_test_pypy.sh
+        circle_target = join(build_tools, "circle")
+        os.mkdir(circle_target)
+        read_write(join(circle_level, "build_test_pypy.txt"),
+                   write_to_dir=circle_target,
+                   suffix=".sh", verbose=verbose,
+                   package_name=name, c="" if not c else " Cython")
 
     # Now build Travis files --------------------------------------------------
     # Create the build_tools/travis components
-    travis = join(build_tools, "travis")
-    os.mkdir(travis)
+    if travis:
+        travis_dir = join(build_tools, "travis")
+        os.mkdir(travis_dir)
 
-    read_write(join(trav_level, "after_success.txt"), write_to_dir=travis,
-               suffix=".sh", verbose=verbose, package_name=name)
+        read_write(join(trav_level, "after_success.txt"),
+                   write_to_dir=travis_dir, suffix=".sh", verbose=verbose,
+                   package_name=name)
 
-    read_write(join(trav_level, "before_install.txt"), write_to_dir=travis,
-               suffix=".sh", verbose=verbose, c="true" if c else "false")
+        read_write(join(trav_level, "before_install.txt"),
+                   write_to_dir=travis_dir,
+                   suffix=".sh", verbose=verbose,
+                   c="true" if c else "false")
 
-    read_write(join(trav_level, "before_script.txt"), write_to_dir=travis,
-               suffix=".sh", verbose=verbose)
+        read_write(join(trav_level, "before_script.txt"),
+                   write_to_dir=travis_dir, suffix=".sh",
+                   verbose=verbose)
 
-    copy_to(join(trav_level, "build_manywheels_linux.sh"),
-            write_to_dir=travis, verbose=verbose)
+        copy_to(join(trav_level, "build_manywheels_linux.sh"),
+                write_to_dir=travis_dir, verbose=verbose)
 
-    copy_to(join(trav_level, "build_wheels.sh"),
-            write_to_dir=travis, verbose=verbose)
+        copy_to(join(trav_level, "build_wheels.sh"),
+                write_to_dir=travis_dir, verbose=verbose)
 
-    read_write(join(trav_level, "install.txt"), write_to_dir=travis,
-               suffix='.sh', verbose=verbose, c="true" if c else "false")
+        read_write(join(trav_level, "install.txt"), write_to_dir=travis_dir,
+                   suffix='.sh', verbose=verbose, c="true" if c else "false")
 
-    copy_to(join(trav_level, "setup.cfg"),
-            write_to_dir=travis, verbose=verbose)
+        copy_to(join(trav_level, "setup.cfg"),
+                write_to_dir=travis_dir, verbose=verbose)
 
-    read_write(join(trav_level, "test_script.txt"),
-               write_to_dir=travis, suffix=".sh", verbose=verbose,
-               package_name=name)
+        read_write(join(trav_level, "test_script.txt"),
+                   write_to_dir=travis_dir, suffix=".sh", verbose=verbose,
+                   package_name=name)
 
 
 def _create_examples_dir(examples_templates, path, verbose, name):
@@ -309,7 +322,8 @@ def _create_examples_dir(examples_templates, path, verbose, name):
 
 def make_package(header, bear_location, bear_version,
                  author, description, email, git_user, license,
-                 name, path, python, requirements, version, c, verbose):
+                 name, path, python, requirements, version, c, verbose,
+                 circle, travis):
     """Build the package.
 
     For each template file in bear/templates, read the file in plain text,
@@ -367,6 +381,12 @@ def make_package(header, bear_location, bear_version,
 
     verbose : bool
         Whether to build in verbose mode.
+
+    circle : bool
+        Whether to enable Circle CI tools
+
+    travis : bool
+        Whether to enable Travis CI tools
     """
     # Make the path for the project
     os.makedirs(path)
@@ -394,7 +414,8 @@ def make_package(header, bear_location, bear_version,
 
     # Create the CI tools
     _create_ci_build_tools(ci_templates=ci_level, path=path, name=name,
-                           verbose=verbose, c=c, proj_level=proj_level)
+                           verbose=verbose, c=c, proj_level=proj_level,
+                           travis=travis, circle=circle)
 
     # Create the examples directory
     _create_examples_dir(examples_templates=ex_level, path=path,

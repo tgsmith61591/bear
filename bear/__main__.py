@@ -6,6 +6,7 @@ import argparse
 from argparse import RawTextHelpFormatter
 
 import bear
+from bear.defaults import default_values
 from bear.utils.validation import validate_args
 from bear.utils.yaml import parse_yaml
 from bear.core import make_package
@@ -76,7 +77,7 @@ if __name__ == "__main__":
                           help="The package author's email address. This is "
                                "included in the setup.py. This is optional.")
 
-    c_parser.add_argument("--git-username", dest="git_user", type=str,
+    c_parser.add_argument("--git_user", dest="git_user", type=str,
                           help="Your git username. If provided, will include "
                                "the project link in your setup.py.")
 
@@ -85,7 +86,7 @@ if __name__ == "__main__":
                                "defaults to 'MIT'. Should be one of 'MIT',"
                                "'BSD-3', or 'GPL'")
 
-    c_parser.add_argument("--name", dest="project_name", type=str,
+    c_parser.add_argument("--project_name", dest="project_name", type=str,
                           help="The name of the package to create. This should "
                                "be a string and should not contain any OS-"
                                "reserved characters.")
@@ -95,7 +96,7 @@ if __name__ == "__main__":
                                "package will be created. This is optional. "
                                "Defaults to '.'")
 
-    c_parser.add_argument("--python", dest="python_requires", type=str,
+    c_parser.add_argument("--python", dest="python", type=str,
                           help="A string of the supported python versions. "
                                "This is included in the setup.py. E.g., "
                                "'>=2.7, >=3.5' or '>=3.0'.\nThis is optional "
@@ -117,21 +118,20 @@ if __name__ == "__main__":
                                "i.e., 1.0.5.\nThis is optional. The default "
                                "value is '1.0.0'")
 
-    # Default args (store as a dict so we can lookup)
-    yaml_defaults = dict(config_file=None)
-    create_defaults = dict(author="",
-                           c=False,
-                           description="",
-                           email="",
-                           git_user="",
-                           license="MIT",
-                           path=".",
-                           project_name=None,
-                           python_requires=">=3.5",
-                           requirements=None,
-                           verbose=False,
-                           version="1.0.0")
+    # Optional arguments that will enable various CI solutions
+    c_parser.add_argument("--circle", dest="circle", action="store_true",
+                          help="Whether to create a .circleci/ directory and "
+                               "build_tools utilities. If False (by default) "
+                               "will not.")
 
+    c_parser.add_argument("--travis", dest="travis", action="store_true",
+                          help="Whether to create a .travis.yml and a Travis "
+                               "build_tools directory. If False (by default) "
+                               "will not.")
+
+    # Default args (store as a dict so we can lookup)
+    yaml_defaults = default_values["yaml"]
+    create_defaults = default_values["create"]
     y_parser.set_defaults(**yaml_defaults)
     c_parser.set_defaults(**create_defaults)
 
