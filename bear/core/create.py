@@ -6,6 +6,7 @@ from ..utils.io import read_write, copy_to
 
 import os
 from os.path import join
+import string
 import datetime
 
 __all__ = ['make_package']
@@ -76,7 +77,7 @@ def _create_project_level(proj_level, path, verbose, name, bear_version,
 
 
 def _create_package_level(package_templates, path, c, version, verbose,
-                          name, header):
+                          name, header, submodules):
     """Create the package-level files and submodules.
 
     Reads/writes the following files with the appropriate edits (version, name,
@@ -131,19 +132,33 @@ def _create_package_level(package_templates, path, c, version, verbose,
     header : str or unicode
         The header to place in created templates. Attributes the creation to
         Bear.
+
+    submodules : str, unicode or None
+        The submodules to create within the package.
     """
     package = join(path, name)
     os.mkdir(package)
+
+    def _vldt(s):
+        if set(s) - set(string.ascii_lowercase):
+            raise ValueError("Illegal character in submodule name: %s" % s)
+
+    fmt_sub = (lambda s: os.linesep.join([_vldt('%s' % sub.strip().lower())
+                                          for sub in s.split(",")])
+               if s else "# Submodules, e.g., 'utils'")
+
     read_write(join(package_templates, "__init__.txt"), write_to_dir=package,
                suffix=".py", verbose=verbose, header=header,
                version=version, package_name_upper=name.upper(),
                package_name=name,
 
                # If cython build, import the __check_build at the head
-               c="from . import __check_build" if c else "")
+               c="from . import __check_build" if c else "",
+               submodules=fmt_sub(submodules))
 
     # If we are using Cython, then we will not comment out the cythonization
     # lines. Otherwise we will.
+    # TODO: find a way to add submodules to setup...
     read_write(join(package_templates, "setup.txt"), write_to_dir=package,
                suffix=".py", verbose=verbose, header=header,
                package_name=name,
@@ -447,7 +462,7 @@ def _create_doc(doc_templates, path, name, requirements, verbose,
 def make_package(header, bear_location, bear_version,
                  author, description, email, git_user, license,
                  name, path, python, requirements, version, c, verbose,
-                 circle, travis):
+                 circle, travis, submodules):
     """Build the package.
 
     For each template file in bear/templates, read the file in plain text,
@@ -511,6 +526,10 @@ def make_package(header, bear_location, bear_version,
 
     travis : bool
         Whether to enable Travis CI tools
+
+    submodules : str, unicode or None
+        A comma-separated string of submodules to create within the package.
+        Default is None (no submodules).
     """
     # Make the path for the project
     os.makedirs(path)
@@ -537,7 +556,7 @@ def make_package(header, bear_location, bear_version,
     # Now create the package-level
     _create_package_level(package_templates=pkg_level, path=path, c=c,
                           version=version, verbose=verbose, name=name,
-                          header=header)
+                          header=header, submodules=submodules)
 
     # Create the CI tools
     _create_ci_build_tools(ci_templates=ci_level, path=path, name=name,

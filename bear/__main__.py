@@ -102,6 +102,11 @@ if __name__ == "__main__":
                                "'>=2.7, >=3.5' or '>=3.0'.\nThis is optional "
                                "and will default to '>=3.5'.")
 
+    c_parser.add_argument("--submodules", dest="submodules", type=str,
+                          help="A comma-separated list of submodules to "
+                               "create within the new package. Default is "
+                               "None.")
+
     c_parser.add_argument("--requirements", dest="requirements", type=str,
                           help="A string consisting of comma-separated "
                                "requirements, which will be written into the "

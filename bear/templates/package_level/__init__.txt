@@ -22,7 +22,7 @@ else:
     # at the top level of the package. For instance, if you want to be able to
     # import '{package_name}.utils', you'd mark 'utils' here as follows:
     __all__ = [
-        # Submodules, e.g., 'utils'
+        {submodules}
     ]
 
 
