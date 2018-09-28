@@ -375,7 +375,7 @@ def _create_doc(doc_templates, path, name, requirements, verbose,
                verbose=verbose, package_name=name)
 
     # Now the RST files
-    fmtreq = lambda req: os.linesep.join(["* " + r for r in req.split(",")])
+    fmtreq = (lambda req: os.linesep.join(["* " + r for r in req.split(",")]))
     read_write(join(doc_templates, "setup.txt"),
                write_to_dir=doc_dir, suffix=".rst", verbose=verbose,
                package_name=name, bear_version=bear_version,
@@ -391,15 +391,16 @@ def _create_doc(doc_templates, path, name, requirements, verbose,
                package_name=name, bear_version=bear_version)
 
     # Amend the configuration
+    linkcode_pattern = ('https://github.com/%(git_user)s/'
+                        '%(package_name)s/blob/{revision}/'
+                        '{package}/{path}#L{lineno}'
+                        % dict(git_user=git_user,
+                               package_name=name))
     read_write(join(doc_templates, "conf.txt"),
                write_to_dir=doc_dir, suffix=".py", verbose=verbose,
                package_name=name, bear_version=bear_version,
                author_name=author, year=year, git_user=git_user,
-               linkcode_pattern='https://github.com/%(git_user)s/'
-                                '%(package_name)s/blob/{revision}/'
-                                '{package}/{path}#L{lineno}'
-                                % dict(git_user=git_user,
-                                       package_name=name))
+               linkcode_pattern=linkcode_pattern)
 
     # Sphinxext dir files and other file copies
     sphinxext = join(doc_dir, "sphinxext")
@@ -409,11 +410,38 @@ def _create_doc(doc_templates, path, name, requirements, verbose,
                 write_to_dir=sphinxext, verbose=verbose)
 
     copy_to(join(doc_templates, "README.md"),
-            write_to_dir=doc_templates, verbose=verbose)
+            write_to_dir=doc_dir, verbose=verbose)
 
-    # Now for _static, _templates, etc.
-    # TODO:
+    # Now for _static, _templates, includes, etc.
+    templates = join(doc_templates, "_templates")
+    templates_target = join(doc_dir, "_templates")
+    os.makedirs(templates_target)
+    for f in ("class.rst", "class_with_call.rst", "class_without_init.rst",
+              "function.rst", "numpydoc_docstring.rst"):
+        copy_to(join(templates, f), write_to_dir=templates_target,
+                verbose=verbose)
 
+    static = join(doc_templates, "_static")
+    css = join(static, "css")
+    css_target = join(doc_dir, "_static", "css")
+    os.makedirs(css_target)
+    for f in ("style.css",):
+        copy_to(join(css, f), write_to_dir=css_target, verbose=verbose)
+
+    includes = join(doc_templates, "includes")
+    includes_tgt = join(doc_dir, "includes")
+    os.makedirs(includes_tgt)
+    copy_to(join(includes, "api_css.rst"), write_to_dir=includes_tgt,
+            verbose=verbose)
+
+    # Now for the modules/classes.txt
+    modules_templates = join(doc_templates, "modules")
+    modules_target = join(doc_dir, "modules")
+    os.makedirs(modules_target)
+
+    read_write(join(modules_templates, "classes.txt"),
+               write_to_dir=modules_target, suffix=".rst", verbose=verbose,
+               bear_version=bear_version, package_name=name)
 
 
 def make_package(header, bear_location, bear_version,

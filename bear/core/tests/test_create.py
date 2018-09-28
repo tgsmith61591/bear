@@ -6,7 +6,8 @@ import bear
 from bear.utils.testing import make_and_cleanup_project_path
 from bear.utils.validation import validate_requirements
 from bear.core.create import make_package, _create_project_level, \
-    _create_package_level, _create_examples_dir, _create_ci_build_tools
+    _create_package_level, _create_examples_dir, _create_ci_build_tools, \
+    _create_doc
 
 import datetime
 import pytest
@@ -23,7 +24,7 @@ templates = join(bear_location, "templates")
 project_level_templates = join(templates, "project_level")
 pkg_level_templates = join(templates, "package_level")
 example_level_templates = join(templates, "examples")
-doc_level_templates = join(templates, "doc")
+doc_level_templates = join(project_level_templates, "doc")
 ci_level_templates = join(templates, "build_tools")
 
 # Attrs of the TEST package we want to create
@@ -35,6 +36,7 @@ email = "some_email@fake.com"
 python = "3.5"
 git_user = "fakegituser"
 lic = "MIT"
+description="This is a test pkg"
 
 # Simple header we'll use
 header = """# -*- coding: utf-8 -*-
@@ -232,6 +234,36 @@ def create_ci_only_circle(c):
     _circle_assertions(c)
 
 
+def _doc_assertions(c):
+    # First, assert the doc folder even exists
+    doc_dir = join(project_path, package_name, "doc")
+    assert os.path.exists(doc_dir)
+
+    # Show each of the subdirs exist
+    subdirs = (join("_static", "css"), "_templates", "includes", "modules",
+               "sphinxext")
+    for subdir in subdirs:
+        assert os.path.exists(join(doc_dir, subdir))
+
+    # Read the config and show the package name exists as expected
+    with open(join(doc_dir, "conf.py"), 'r') as cfg:
+        conf = cfg.read()
+
+    assert package_name in conf
+    assert author in conf
+    assert year in conf
+
+
+@make_and_cleanup_project_path(project_path, package_name)
+def create_documentation(c):
+    _create_doc(doc_templates=doc_level_templates, path=path, name=package_name,
+                requirements=validate_requirements(None, c), verbose=True,
+                bear_version=bear_version, description=description,
+                author=author, year=year, git_user=git_user)
+
+    _doc_assertions(c)
+
+
 # For this one, we'll just embed the package/project assertions, etc.
 @make_and_cleanup_project_path(project_path)
 def do_make_package(c):
@@ -249,6 +281,7 @@ def do_make_package(c):
     _package_assertions(c)
     _ci_assertions(c)
     _examples_assertions(c)
+    _doc_assertions(c)
 
 
 # This is really the test runner grid. Runs each create function with
@@ -260,6 +293,7 @@ def do_make_package(c):
     create_ci_both_true,
     create_ci_only_travis,
     create_ci_only_circle,
+    create_documentation,
     do_make_package
 ])
 def test_respective_create_functions(func):
