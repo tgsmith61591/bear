@@ -159,6 +159,7 @@ def _create_package_level(package_templates, path, c, version, verbose,
     # If we are using Cython, then we will not comment out the cythonization
     # lines. Otherwise we will.
     # TODO: find a way to add submodules to setup...
+    # TODO: use submodule_init_template.txt
     read_write(join(package_templates, "setup.txt"), write_to_dir=package,
                suffix=".py", verbose=verbose, header=header,
                package_name=name,
