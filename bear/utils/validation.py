@@ -5,6 +5,8 @@ from __future__ import absolute_import
 import six
 import os
 
+from pkg_resources import parse_version
+
 __all__ = [
     'validate_args'
 ]
@@ -196,9 +198,21 @@ def validate_requirements(req, cython_required):
 
     # Hard requirements. Numpy is ALWAYS required, but cython is only if
     # cython_required
-    hard_requirements = dict(numpy=">=1.12")
+    min_numpy = "1.12"
+    min_cython = "0.23"
+    hard_requirements = dict(numpy=">=%s" % min_numpy)
     if cython_required:
-        hard_requirements['cython'] = '>=0.23'
+        hard_requirements['cython'] = '>=%s' % min_cython
+
+    # prioritize the most recent version, if specified
+    # def _which_version(existing, provided):
+    #     if not existing:
+    #         return provided
+    #     if not provided:
+    #         return existing
+    #
+    #     # Otherwise return the specified version to appease the user
+    #     return provided
 
     # For each requirement, determine whether it's in the hard requirements
     new_requirements = []

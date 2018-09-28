@@ -20,6 +20,50 @@ time that could be spent prototyping just putting together the structure of a
 project (including doc, CI/CD pipelines, etc.). Bear streamlines that to allow
 you to move straight into the code-writing.
 
+After bear is installed, you can start creating new project skeletons right away.
+There are two options for creating projects with bear:
+
+* "create"
+* "yaml"
+
+
+#### "Create"
+
+The fastest way to use bear is from the CLI with `create` mode:
+
 ```bash
-$ python -m bear --project_name my_project
+$ python -m bear create --project_name my_project
+```
+
+With the `create` command, you can get as complicated as you like:
+
+```bash
+$ python -m bear create \
+  --path . \
+  --project_name new_project \
+  --git_user newBearUser42 \
+  --python ">=3.5" \
+  --requirements "numpy,scipy,scikit-learn" \
+  --version 1.0.0
+```
+
+#### "Yaml"
+
+You can do the same thing with a YAML file. To create the exact same package
+as above with a YAML file:
+
+```yaml
+# config.yml
+path: .
+project_name: new_project
+git_user: newBearUser42
+python: ">=3.5"
+requirements: numpy,scipy,scikit-learn
+version: "1.0.0"
+```
+
+...and running the package:
+
+```bash
+$ python -m bear yaml --file config.yml
 ```
