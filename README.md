@@ -44,7 +44,8 @@ $ python -m bear create \
   --git_user newBearUser42 \
   --python ">=3.5" \
   --requirements "numpy,scipy,scikit-learn" \
-  --version 1.0.0
+  --version 1.0.0 \
+  --verbose
 ```
 
 #### "Yaml"
@@ -60,6 +61,7 @@ git_user: newBearUser42
 python: ">=3.5"
 requirements: numpy,scipy,scikit-learn
 version: "1.0.0"
+verbose: true
 ```
 
 ...and running the package:
@@ -67,3 +69,21 @@ version: "1.0.0"
 ```bash
 $ python -m bear yaml --file config.yml
 ```
+
+**Note that any option on the command line is available via YAML and goes by the same key.**
+
+## Including CI tools
+
+You can make your life easier by adding auto-configured CI tools and 
+configuration files to your package. As of v1.0.9, the following CI/CD tools are
+available and can be added with the respective options:
+
+* Travis CI (`--travis`)
+    
+    Auto-includes `build_tools/travis` helper scripts for testing and deploying on Linux
+    and Mac OS, as well as a `.travis.yml` file.
+    
+* Circle CI (`--circle`)
+
+    Auto-includes a `.circleci/config.yml` file as well as a test runner in `build_tools/circle/build_test_pypy.sh`
+    for testing PyPy distributions of Python.
