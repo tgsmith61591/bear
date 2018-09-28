@@ -1,7 +1,6 @@
 recursive-include bear/ *
 recursive-include bear/templates/build_tools/travis *.txt *.sh *.cfg
 recursive-include bear/templates/build_tools/circle *.txt
-recursive-include bear/templates/doc *
 recursive-include bear/templates/examples *.txt
 recursive-include bear/templates/package_level *.txt
 recursive-include bear/templates/package_level/__check_build *.txt
@@ -9,4 +8,10 @@ recursive-include bear/templates/package_level/__check_build/tests *.txt
 recursive-include bear/templates/package_level/_build_utils *.txt
 recursive-include bear/templates/project_level *
 recursive-include bear/templates/project_level/.circleci/ *.yml
+recursive-include bear/templates/project_level/doc/ *.txt *.rst *.md Makefile
+recursive-include bear/templates/project_level/doc/_static/css *.css
+recursive-include bear/templates/project_level/doc/_templates/ *.rst
+recursive-include bear/templates/project_level/doc/includes/ *.rst
+recursive-include bear/templates/project_level/doc/modules/ *.txt
+recursive-include bear/templates/project_level/doc/sphinxext/ *.py *.in
 recursive-include bear/templates/project_level/licenses *

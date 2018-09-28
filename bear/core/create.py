@@ -13,7 +13,7 @@ __all__ = ['make_package']
 
 def _create_project_level(proj_level, path, verbose, name, bear_version,
                           description, requirements, header, author, email,
-                          python, c, git_user, license):
+                          python, c, git_user, license, year):
     """Create the top-level of the project (not the package itself)
 
     Reads/writes the following files to the top of the project-level, editing
@@ -72,7 +72,7 @@ def _create_project_level(proj_level, path, verbose, name, bear_version,
     # Now, move over the appropriate license
     read_write(join(proj_level, "licenses", license), write_to_dir=path,
                overwrite_name="LICENSE", verbose=verbose,
-               package_name=name, year=str(datetime.datetime.now().year))
+               package_name=name, year=year)
 
 
 def _create_package_level(package_templates, path, c, version, verbose,
@@ -320,6 +320,130 @@ def _create_examples_dir(examples_templates, path, verbose, name):
                package_name=name)
 
 
+def _create_doc(doc_templates, path, name, requirements, verbose,
+                bear_version, description, author, year, git_user):
+    """Create the documentation for the package.
+
+    This creates a doc/ directory at the project level, and populates the
+    Sphinx configuration as well as respective Makefiles.
+
+    Parameters
+    ----------
+    doc_templates : str or unicode
+        The path to the Bear templates for documentation.
+
+    path : str or unicode
+        The absolute path to the location where the package will be created.
+        The package will be built at ``{path}/name``
+
+    name : str or unicode
+        The name of the package
+
+    requirements : str or unicode
+        The package requirements to be written in requirements.txt
+
+    verbose : bool
+        Whether to build in verbose mode.
+
+    bear_version : str or unicode
+        The version of Bear that created the package.
+
+    description : str or unicode
+        The description for the package. This is written into the new
+        project's setup.py.
+
+    year : str or unicode
+        The year for copyright purposes.
+
+    author: str or unicode
+        The package author.
+
+    git_user : str or unicode
+        The git username of the author.
+    """
+    # New doc location
+    doc_dir = join(path, "doc")
+    os.makedirs(doc_dir)
+
+    # Write the make files
+    read_write(join(doc_templates, "make.txt"),
+               write_to_dir=doc_dir, suffix=".bat",
+               verbose=verbose, package_name=name)
+
+    read_write(join(doc_templates, "Makefile"),
+               write_to_dir=doc_dir, suffix=None,
+               verbose=verbose, package_name=name)
+
+    # Now the RST files
+    fmtreq = (lambda req: os.linesep.join(["* " + r for r in req.split(",")]))
+    read_write(join(doc_templates, "setup.txt"),
+               write_to_dir=doc_dir, suffix=".rst", verbose=verbose,
+               package_name=name, bear_version=bear_version,
+               requirements=fmtreq(requirements))
+
+    read_write(join(doc_templates, "about.txt"),
+               write_to_dir=doc_dir, suffix=".rst", verbose=verbose,
+               package_name=name, bear_version=bear_version,
+               description=description, hashes="=" * len(name))
+
+    read_write(join(doc_templates, "user_guide.txt"),
+               write_to_dir=doc_dir, suffix=".rst", verbose=verbose,
+               package_name=name, bear_version=bear_version)
+
+    # Amend the configuration
+    linkcode_pattern = ('https://github.com/%(git_user)s/'
+                        '%(package_name)s/blob/{revision}/'
+                        '{package}/{path}#L{lineno}'
+                        % dict(git_user=git_user,
+                               package_name=name))
+    read_write(join(doc_templates, "conf.txt"),
+               write_to_dir=doc_dir, suffix=".py", verbose=verbose,
+               package_name=name, bear_version=bear_version,
+               author_name=author, year=year, git_user=git_user,
+               linkcode_pattern=linkcode_pattern)
+
+    # Sphinxext dir files and other file copies
+    sphinxext = join(doc_dir, "sphinxext")
+    os.makedirs(sphinxext)
+    for f in ("github_link.py", "MANIFEST.in"):
+        copy_to(join(doc_templates, "sphinxext", f),
+                write_to_dir=sphinxext, verbose=verbose)
+
+    copy_to(join(doc_templates, "README.md"),
+            write_to_dir=doc_dir, verbose=verbose)
+
+    # Now for _static, _templates, includes, etc.
+    templates = join(doc_templates, "_templates")
+    templates_target = join(doc_dir, "_templates")
+    os.makedirs(templates_target)
+    for f in ("class.rst", "class_with_call.rst", "class_without_init.rst",
+              "function.rst", "numpydoc_docstring.rst"):
+        copy_to(join(templates, f), write_to_dir=templates_target,
+                verbose=verbose)
+
+    static = join(doc_templates, "_static")
+    css = join(static, "css")
+    css_target = join(doc_dir, "_static", "css")
+    os.makedirs(css_target)
+    for f in ("style.css",):
+        copy_to(join(css, f), write_to_dir=css_target, verbose=verbose)
+
+    includes = join(doc_templates, "includes")
+    includes_tgt = join(doc_dir, "includes")
+    os.makedirs(includes_tgt)
+    copy_to(join(includes, "api_css.rst"), write_to_dir=includes_tgt,
+            verbose=verbose)
+
+    # Now for the modules/classes.txt
+    modules_templates = join(doc_templates, "modules")
+    modules_target = join(doc_dir, "modules")
+    os.makedirs(modules_target)
+
+    read_write(join(modules_templates, "classes.txt"),
+               write_to_dir=modules_target, suffix=".rst", verbose=verbose,
+               bear_version=bear_version, package_name=name)
+
+
 def make_package(header, bear_location, bear_version,
                  author, description, email, git_user, license,
                  name, path, python, requirements, version, c, verbose,
@@ -396,8 +520,11 @@ def make_package(header, bear_location, bear_version,
     proj_level = join(templates, "project_level")
     pkg_level = join(templates, "package_level")
     ex_level = join(templates, "examples")
-    doc_level = join(templates, "doc")
+    doc_level = join(proj_level, "doc")
     ci_level = join(templates, "build_tools")
+
+    # in case someone runs this on 12/31 11:59:59, capture this ONCE
+    year = str(datetime.datetime.now().year)
 
     # Create the top level of the project (not the package yet)
     _create_project_level(proj_level=proj_level, path=path, verbose=verbose,
@@ -405,7 +532,7 @@ def make_package(header, bear_location, bear_version,
                           description=description, requirements=requirements,
                           header=header, author=author, email=email,
                           python=python, c=c, git_user=git_user,
-                          license=license)
+                          license=license, year=year)
 
     # Now create the package-level
     _create_package_level(package_templates=pkg_level, path=path, c=c,
@@ -421,4 +548,8 @@ def make_package(header, bear_location, bear_version,
     _create_examples_dir(examples_templates=ex_level, path=path,
                          verbose=verbose, name=name)
 
-    # TODO: someday do the doc level
+    # Create the documentation
+    _create_doc(doc_templates=doc_level, path=path, name=name,
+                requirements=requirements, verbose=verbose,
+                bear_version=bear_version, description=description,
+                year=year, author=author, git_user=git_user)
