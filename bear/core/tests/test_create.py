@@ -8,6 +8,7 @@ from bear.utils.validation import validate_requirements
 from bear.core.create import make_package, _create_project_level, \
     _create_package_level, _create_examples_dir, _create_ci_build_tools
 
+import datetime
 import pytest
 import os
 from os.path import join
@@ -15,6 +16,7 @@ from os.path import join
 # Attrs of the bear package
 bear_location = bear.package_location()
 bear_version = bear.__version__
+year = str(datetime.datetime.now().year)
 
 # Template directories
 templates = join(bear_location, "templates")
@@ -77,7 +79,7 @@ def create_project_level(c):
                           requirements=validate_requirements(None, c),
                           header=header, author=author, email=email,
                           python=python, c=c, git_user=git_user,
-                          license=lic)
+                          license=lic, year=year)
 
     # Modularize this so we can assert them from other areas as well
     _project_assertions(c)
