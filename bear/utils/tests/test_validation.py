@@ -82,7 +82,8 @@ def test_validate_args():
                               verbose=False,
                               version="1.0.0",
                               travis=True,
-                              circle=True)
+                              circle=True,
+                              submodules=None)
 
     # Just show it works, really
     validated = validate_args(args)

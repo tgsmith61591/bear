@@ -76,6 +76,33 @@ def _create_project_level(proj_level, path, verbose, name, bear_version,
                package_name=name, year=year)
 
 
+def _get_submodules(submodules):
+    # If no submodules, bail early.
+    if not submodules:
+        return "# Submodules, e.g., 'utils'", []
+
+    def _vldt(s):
+        if set(s) - set(string.ascii_lowercase):
+            raise ValueError("Illegal character in submodule name: %s" % s)
+        return s
+
+    # Get a string for the __init__ and a list for the setup
+    submodule_list = []
+    for sub in sorted(submodules.split(",")):
+        # Trim it
+        sub = sub.strip().lower()
+
+        # if it's empty, continue
+        if not sub:
+            continue
+        submodule_list.append(_vldt(sub))
+
+    # Now join them all up with ", " and add ticks around the names for the
+    # __init__ file
+    init_submodules = ", ".join(map(lambda s: "'%s'" % s, submodule_list))
+    return init_submodules, submodule_list
+
+
 def _create_package_level(package_templates, path, c, version, verbose,
                           name, header, submodules):
     """Create the package-level files and submodules.
@@ -139,14 +166,10 @@ def _create_package_level(package_templates, path, c, version, verbose,
     package = join(path, name)
     os.mkdir(package)
 
-    def _vldt(s):
-        if set(s) - set(string.ascii_lowercase):
-            raise ValueError("Illegal character in submodule name: %s" % s)
+    # Unpack the submodules/validate them
+    submodules, submodule_list = _get_submodules(submodules)
 
-    fmt_sub = (lambda s: os.linesep.join([_vldt('%s' % sub.strip().lower())
-                                          for sub in s.split(",")])
-               if s else "# Submodules, e.g., 'utils'")
-
+    # Write the __init__ with the submodules, if any
     read_write(join(package_templates, "__init__.txt"), write_to_dir=package,
                suffix=".py", verbose=verbose, header=header,
                version=version, package_name_upper=name.upper(),
@@ -154,18 +177,56 @@ def _create_package_level(package_templates, path, c, version, verbose,
 
                # If cython build, import the __check_build at the head
                c="from . import __check_build" if c else "",
-               submodules=fmt_sub(submodules))
+               submodules=submodules)
+
+    # For each submodule, create it within the package
+    setup_script_packages = []
+    setup_script_test_packages = []
+    init_template = join(package_templates, "submodule_init_template.txt")
+
+    for module in submodule_list:
+        dest = join(package, module)
+        test_dest = join(dest, "tests")
+        os.makedirs(test_dest)  # makes both the dest/ AND tests/
+
+        # Write the __init__ file for the submodule
+        read_write(init_template, write_to_dir=dest,
+                   overwrite_name="__init__.py", verbose=verbose,
+                   module_name=module)
+
+        # And write an empty __init__ into the tests directory. We can "hack"
+        # here and just copy the empty __init__ we have lying in the
+        # __check_build template directory... Hack alert!!!
+        copy_to(
+            join(package_templates, "__check_build", "tests", "__init__.py"),
+            write_to_dir=test_dest, verbose=verbose)
+
+        # And add the package to the setup script list we'll write later
+        setup_script_packages.append("config.add_subpackage('%s')" % module)
+        setup_script_test_packages.append("config.add_subpackage('%s/tests')"
+                                          % module)
+
+    # At this point, if we have setup script lines, let's join them up
+    if setup_script_packages:
+        join_key = os.linesep + " " * 4
+        setup_script_packages = join_key.join(setup_script_packages)
+        setup_script_test_packages = join_key.join(setup_script_test_packages)
+    # Otherwise, just make it an empty string?
+    else:
+        setup_script_packages = setup_script_test_packages = ""
 
     # If we are using Cython, then we will not comment out the cythonization
     # lines. Otherwise we will.
-    # TODO: find a way to add submodules to setup...
-    # TODO: use submodule_init_template.txt
     read_write(join(package_templates, "setup.txt"), write_to_dir=package,
                suffix=".py", verbose=verbose, header=header,
                package_name=name,
 
                # Insert a comment in front of cython lines if not using cython
-               comment_for_no_c="# " if not c else "")
+               comment_for_no_c="# " if not c else "",
+
+               # Packages we're adding
+               setup_script_packages=setup_script_packages,
+               setup_script_test_packages=setup_script_test_packages)
 
     # If we're depending on building C code, we need to create the
     # __check_build and _build_utils submodules

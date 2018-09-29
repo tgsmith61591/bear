@@ -27,10 +27,12 @@ def configuration(parent_package='', top_path=None):
 
     # This is where you'll add your submodules, e.g.:
     # config.add_subpackage('utils')
+    {setup_script_packages}
 
     # This is where you'll add your module tests -- must be added after the
     # submodules were added above!
     # config.add_subpackage('utils/tests')
+    {setup_script_test_packages}
 
     # This is where you'll add (in the same format as above) the submodules
     # that DO need cythonizing

@@ -7,7 +7,7 @@ from bear.utils.testing import make_and_cleanup_project_path
 from bear.utils.validation import validate_requirements
 from bear.core.create import make_package, _create_project_level, \
     _create_package_level, _create_examples_dir, _create_ci_build_tools, \
-    _create_doc
+    _create_doc, _get_submodules
 
 import datetime
 import pytest
@@ -36,7 +36,7 @@ email = "some_email@fake.com"
 python = "3.5"
 git_user = "fakegituser"
 lic = "MIT"
-description="This is a test pkg"
+description = "This is a test pkg"
 
 # Simple header we'll use
 header = """# -*- coding: utf-8 -*-
@@ -115,6 +115,9 @@ def _package_assertions(c):
         else:
             assert c_import not in _init
 
+        # Show that we had a submodule in there
+        assert "'misc', 'utils'" in _init
+
     # Same with the setup.py
     with open(join(package_level, 'setup.py'), 'r') as stp:
         setup = stp.read()
@@ -129,13 +132,17 @@ def _package_assertions(c):
         else:
             assert commented_str not in setup and uncommented_str in setup
 
+        # assert on the setup.py submodules
+        assert "config.add_subpackage('misc')" in setup
+        assert "config.add_subpackage('misc/tests')" in setup
+
 
 @make_and_cleanup_project_path(project_path, package_name)
 def create_package_level(c):
     _create_package_level(package_templates=pkg_level_templates,
                           path=path, c=c, version=bear_version,
                           verbose=True, name=package_name,
-                          header=header)
+                          header=header, submodules="misc,utils")
 
     _package_assertions(c)
 
@@ -274,7 +281,7 @@ def do_make_package(c):
                  name=package_name, path=path,
                  python=python, requirements=validate_requirements(None, c),
                  version=bear_version, c=c, verbose=True,
-                 travis=True, circle=True)
+                 travis=True, circle=True, submodules="misc,utils")
 
     # Co-op the other assertion functions
     _project_assertions(c)
@@ -299,3 +306,25 @@ def do_make_package(c):
 def test_respective_create_functions(func):
     for c in (True, False):
         func(c)
+
+
+def test_get_submodules():
+    # Test that no submodules yields None
+    s, s_list = _get_submodules(None)
+    assert s == "# Submodules, e.g., 'utils'", s
+    assert not s_list
+
+    # Test for a single submodule we get one back
+    s, s_list = _get_submodules("utils")
+    assert s == "'utils'", s
+    assert s_list == ["utils"]
+
+    # Test for two we get the expected string back (and in sorted order)
+    s, s_list = _get_submodules("utils, misc")
+    assert s == "'misc', 'utils'", s
+    assert s_list == ["misc", "utils"]
+
+    # Test for a non-truthy and weirdly-cased word we get the expected
+    s, s_list = _get_submodules("UtilS, ")
+    assert s == "'utils'", s
+    assert s_list == ["utils"]
