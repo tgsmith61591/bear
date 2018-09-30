@@ -59,11 +59,21 @@ test_create_new_package_cli() {
       --verbose
 
     # CD in, setup the package and test that we can load stuff
-    python setup.py install
+    echo "Setting up test python pkg"
+    cd ${test_package_name} && python setup.py install
 
     # The version should be 1.1.1
-    echo `python -c "import ${test_package_name} as p; print(p.__version__)"`
+    echo "Importing test python pkg"
+    test_pkg_vsn=`python -c "import ${test_package_name} as p; print(p.__version__)"`
     cd $OLDPWD
+
+    # Assert
+    if [[ ${test_pkg_vsn} == "1.1.1" ]]; then
+        echo "Passed!"
+    else
+        echo "Expected '1.1.1' but got ${test_pkg_vsn}"
+        exit 19
+    fi
 }
 
 if [[ "$SKIP_TESTS" != "true" ]]; then
