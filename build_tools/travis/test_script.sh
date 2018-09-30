@@ -46,23 +46,24 @@ run_tests() {
 test_create_new_package_cli() {
     test_package_location="bear_cli_test_package"
     test_package_name="cli_test_package"
+
     mkdir -p ${test_package_location}
+    cd ${test_package_location}
 
     # Test creating a packing from CLI
     python -m bear create \
       --project_name "${test_package_name}" \
       --python ">={PYTHON_VERSION}" \
-      --path "${test_package_location}" \
       --git_user "tgsmith61591" \
       --version "1.1.1" \
       --verbose
 
     # CD in, setup the package and test that we can load stuff
-    cd ${test_package_location}
     python setup.py install
 
     # The version should be 1.1.1
     echo `python -c "import ${test_package_name} as p; print(p.__version__)"`
+    cd $OLDPWD
 }
 
 if [[ "$SKIP_TESTS" != "true" ]]; then
