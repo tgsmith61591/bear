@@ -6,6 +6,8 @@
 #   PYTHON_VERSION
 #   SKIP_TESTS
 
+set -e
+
 # Test using bear to create a new package
 test_create_new_package_cli() {
     test_package_location="bear_cli_test_package"
@@ -83,6 +85,12 @@ test_create_new_package_yaml() {
 }
 
 if [[ "$SKIP_TESTS" != "true" ]]; then
+
+    # If we're on Circle make sure we have the virtualenv activated
+    if [[ "$TESTING_ON_CIRCLE" == "true" ]]; then
+        source pypy-env/bin/activate || echo "Virtualenv is already activated"
+    fi
+
     test_create_new_package_cli
     test_create_new_package_yaml
 fi

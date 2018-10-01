@@ -8,8 +8,9 @@ jobs:
     # Used in the shared CI scripts, not actually in any of the
     # direct tests for Circle
     environment:
-      - PYTHON_VERSION: "3.6"
+      - PYTHON_VERSION: "3.5"
       - SKIP_TESTS: "false"
+      - TESTING_ON_CIRCLE: "true"
     steps:
       # Download and cache dependencies
       - restore_cache:
