@@ -8,6 +8,24 @@
 
 set -e
 
+
+virtualenv_install() {
+    pip install -vv -e .
+}
+
+conda_install() {
+    python setup.py install
+}
+
+# For installing the package on either a Conda dist or Virtual env dist
+install_package() {
+    if [[ "$TESTING_ON_CIRCLE" == "true" ]]; then
+        virtualenv_install
+    else
+        conda_install
+    fi
+}
+
 # Test using bear to create a new package
 test_create_new_package_cli() {
     test_package_location="bear_cli_test_package"
@@ -26,7 +44,8 @@ test_create_new_package_cli() {
 
     # CD in, setup the package and test that we can load stuff
     echo "Setting up test python pkg"
-    cd ${test_package_name} && python setup.py install
+    cd ${test_package_name}
+    install_package
 
     # The version should be 1.1.1
     echo "Importing test python pkg"
@@ -68,7 +87,8 @@ test_create_new_package_yaml() {
 
     # CD in, setup the package and test that we can load stuff
     echo "Setting up YAML test python pkg"
-    cd ${yaml_pkg_name} && python setup.py install
+    cd ${yaml_pkg_name}
+    install_package
 
     # The version should be 1.1.5
     echo "Importing test YAML python pkg"
