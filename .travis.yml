@@ -61,7 +61,7 @@ matrix:
     - os: linux
       dist: trusty
       env: DISTRIB="conda" PYTHON_VERSION="3.6.1"
-           COVERAGE=true DEPLOY=false TEST_DOCSTRINGS="true"
+           COVERAGE=true DEPLOY=true TEST_DOCSTRINGS="true"
 
 install: source build_tools/travis/install.sh
 before_script: bash build_tools/travis/before_script.sh
