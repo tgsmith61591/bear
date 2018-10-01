@@ -76,7 +76,50 @@ test_create_new_package_cli() {
     fi
 }
 
+test_create_new_package_yaml() {
+    yaml_proj_path="test_yaml_project"
+    yaml_pkg_name="test_yaml_package"
+
+    mkdir -p ${yaml_proj_path}
+    cd ${yaml_proj_path}
+
+    # Test creating from YAML
+    echo "project_name: ${yaml_pkg_name}" > config.yml
+    echo "python: '>=${PYTHON_VERSION}'" >> config.yml
+    echo "git_user: tgsmith61591" >> config.yml
+    echo "version: '1.1.5'" >> config.yml
+    echo "verbose: true" >> config.yml
+
+    # This tests that we can install requirements via setup
+    echo "requirements: numpy,scikit-learn" >> config.yml
+
+    # Let's also test with CI tools in here
+    echo "travis: true" >> config.yml
+    echo "circle: true" >> config.yml
+
+    # Actually set it up with bear
+    python -m bear yaml --file config.yml
+
+    # CD in, setup the package and test that we can load stuff
+    echo "Setting up YAML test python pkg"
+    cd ${yaml_pkg_name} && python setup.py install
+
+    # The version should be 1.1.5
+    echo "Importing test YAML python pkg"
+    test_yaml_pkg_vsn=`python -c "import ${yaml_pkg_name} as p; print(p.__version__)"`
+    cd $OLDPWD
+
+    # Assert
+    if [[ ${test_yaml_pkg_vsn} == "1.1.5" ]]; then
+        echo "Passed!"
+    else
+        echo "Expected '1.1.5' but got ${test_yaml_pkg_vsn}"
+        exit 22
+    fi
+}
+
 if [[ "$SKIP_TESTS" != "true" ]]; then
     run_tests
     test_create_new_package_cli
+    test_create_new_package_yaml
 fi
