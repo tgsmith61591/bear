@@ -75,6 +75,12 @@ def _create_project_level(proj_level, path, verbose, name, bear_version,
                overwrite_name="LICENSE", verbose=verbose,
                package_name=name, year=year)
 
+    # Create the Makefile. This is necessary for using the build_many_wheels
+    # deploy script on Travis.
+    read_write(join(proj_level, "Makefile"), write_to_dir=path,
+               overwrite_name="Makefile", verbose=verbose,
+               package_name=name, perl_patterns="'s/[ \t]*$$//' {}")
+
 
 def _get_submodules(submodules):
     # If no submodules, bail early.

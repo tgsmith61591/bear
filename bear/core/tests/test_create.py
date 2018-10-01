@@ -70,6 +70,13 @@ def _project_assertions(c):
         assert '*/{package_name}/setup.py'.format(
             package_name=package_name) in coverage
 
+    # Test Makefile present
+    with open(join(proj_dir, 'Makefile'), 'r') as make:
+        makefile = make.read().lower()
+        assert "flake8 {package_name} | " \
+               "grep -v __init__ | " \
+               "grep -v external".format(package_name=package_name) in makefile
+
 
 @make_and_cleanup_project_path(project_path, package_name)
 def create_project_level(c):
