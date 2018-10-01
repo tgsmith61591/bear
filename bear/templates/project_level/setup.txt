@@ -182,6 +182,9 @@ def do_setup():
                     description=DESCRIPTION,
                     license=LICENSE,
                     version=VERSION,
+                    classifiers=[
+                        'Programming Language :: Python'
+                    ],
                     python_requires='{python_requires}',
                     platforms=["Windows", "Linux", "Unix", "Mac OS-X"],
                     cmdclass=cmdclass,

@@ -61,10 +61,10 @@ matrix:
     # runs on linux
     - os: linux
       dist: trusty
-      env: DISTRIB="conda" PYTHON_VERSION="3.6.1"
+      env: DISTRIB="conda" PYTHON_VERSION="3.6.1" COVERAGE=true
            DOCKER_IMAGE="quay.io/pypa/manylinux1_x86_64"
-           DOCKER_CONTAINER_NAME="bearcontainer"
-           COVERAGE=true DEPLOY=true TEST_DOCSTRINGS="true"
+           DOCKER_CONTAINER_NAME="bearcontainer" DEPLOY=true
+           TEST_DOCSTRINGS="true"
 
 install: source build_tools/travis/install.sh
 before_script: bash build_tools/travis/before_script.sh
