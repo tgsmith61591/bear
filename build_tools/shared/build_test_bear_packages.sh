@@ -76,7 +76,7 @@ test_create_new_package_yaml() {
     echo "verbose: true" >> config.yml
 
     # This tests that we can install requirements via setup
-    echo "requirements: numpy,scikit-learn" >> config.yml
+    echo "requirements: numpy,scipy" >> config.yml
 
     # Let's also test with CI tools in here
     echo "travis: true" >> config.yml
