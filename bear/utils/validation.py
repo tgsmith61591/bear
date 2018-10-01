@@ -59,6 +59,7 @@ def validate_args(args):
                 path=path,
                 python=_getattr(args, 'python'),
                 requirements=req,
+                submodules=_getattr(args, 'submodules'),
                 verbose=_getattr(args, 'verbose'),
                 version=_getattr(args, 'version'),
                 travis=_getattr(args, 'travis'),

@@ -34,7 +34,7 @@ run_tests() {
     cd $TEST_DIR
 
     if [[ "$COVERAGE" == "true" ]]; then
-        TEST_CMD="$TEST_CMD --cov-config .coveragerc --cov skoot"
+        TEST_CMD="$TEST_CMD --cov-config .coveragerc --cov bear"
     fi
     $TEST_CMD bear
 

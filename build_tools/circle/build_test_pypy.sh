@@ -19,7 +19,9 @@ source pypy-env/bin/activate
 python --version
 which python
 
-pip install --extra-index https://antocuni.github.io/pypy-wheels/ubuntu numpy pytest pyyaml
+# Make sure to install scipy for Circle so we can use it as a requirement
+# in the test bear pacakage
+pip install --extra-index https://antocuni.github.io/pypy-wheels/ubuntu numpy pytest pyyaml scipy
 
 ccache -M 512M
 export CCACHE_COMPRESS=1
