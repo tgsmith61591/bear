@@ -65,7 +65,9 @@ matrix:
 
 install: source build_tools/travis/install.sh
 before_script: bash build_tools/travis/before_script.sh
-script: bash build_tools/travis/test_script.sh
+script:
+  - bash build_tools/travis/test_script.sh
+  - bash build_tools/shared/build_test_bear_packages.sh
 
 # we set +e to re-instate the error-tolerant state. The problem is Travis is broken on Mac OS
 # builds right now due to Issue 6307 (https://github.com/travis-ci/travis-ci/issues/6307)

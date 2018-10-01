@@ -5,6 +5,11 @@ jobs:
   pypy36:
     docker:
       - image: pypy:3-6.0.0
+    # Used in the shared CI scripts, not actually in any of the
+    # direct tests for Circle
+    environment:
+      - PYTHON_VERSION: "3.6"
+      - SKIP_TESTS: "false"
     steps:
       # Download and cache dependencies
       - restore_cache:
@@ -14,7 +19,7 @@ jobs:
           - pypy3-ccache
 
       - checkout
-      - run: ./build_tools/circle/build_test_pypy.sh
+      - run: ./build_tools/circle/build_test_pypy.sh && ./build_tools/shared/build_test_bear_packages.sh
       - save_cache:
           key: pypy3-ccache-{{ .Branch }}-{{ .BuildNum }}
           paths:
