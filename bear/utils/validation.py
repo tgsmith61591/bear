@@ -8,7 +8,11 @@ import os
 from pkg_resources import parse_version
 
 __all__ = [
-    'validate_args'
+    'validate_args',
+    'validate_license',
+    'validate_path',
+    'validate_project_name',
+    'validate_requirements'
 ]
 
 
