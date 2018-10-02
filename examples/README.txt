@@ -3,6 +3,6 @@
 Examples
 ========
 
-Examples of use for submodules in bear.
+Examples for how to use Bear
 
 |
