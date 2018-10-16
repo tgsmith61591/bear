@@ -23,7 +23,6 @@ def configuration(parent_package='', top_path=None):
     {comment_for_no_c}config.add_subpackage('__check_build')
     {comment_for_no_c}config.add_subpackage('__check_build/tests')
     {comment_for_no_c}config.add_subpackage('_build_utils')
-    {comment_for_no_c}config.add_subpackage('_build_utils/tests')
 
     # This is where you'll add your submodules, e.g.:
     # config.add_subpackage('utils')

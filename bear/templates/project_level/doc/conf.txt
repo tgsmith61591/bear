@@ -210,7 +210,7 @@ texinfo_documents = [
 ]
 
 sphinx_gallery_conf = dict(
-    doc_module='{author_name}',
+    doc_module='{package_name}',
     backreferences_dir=os.path.join('modules', 'generated'),
     reference_url=dict({package_name}=None)
 )

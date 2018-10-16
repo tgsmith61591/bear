@@ -21,7 +21,7 @@ DOCLINES = __doc__.split(os.linesep)
 # so {package_name} __init__ can detect if it's being loaded in the setup
 # routine, so it won't load submodules that haven't yet been built.
 # This is because of the numpy distutils extensions that are used by
-# skoot to build the compiled extensions in sub-packages
+# {package_name} to build the compiled extensions in sub-packages
 builtins.__{package_name_upper}_SETUP__ = True
 
 # metadata

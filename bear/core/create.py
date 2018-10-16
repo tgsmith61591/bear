@@ -11,6 +11,10 @@ import datetime
 
 __all__ = ['make_package']
 
+# Valid characters for submodules
+_valid_submodule_chars = set(string.ascii_lowercase)
+_valid_submodule_chars.add("_")
+
 
 def _create_project_level(proj_level, path, verbose, name, bear_version,
                           description, requirements, header, author, email,
@@ -79,7 +83,7 @@ def _create_project_level(proj_level, path, verbose, name, bear_version,
     # deploy script on Travis.
     read_write(join(proj_level, "Makefile"), write_to_dir=path,
                overwrite_name="Makefile", verbose=verbose,
-               package_name=name, perl_patterns="'s/[ \t]*$$//' {}")
+               package_name=name, braces="{}")
 
 
 def _get_submodules(submodules):
@@ -88,7 +92,7 @@ def _get_submodules(submodules):
         return "# Submodules, e.g., 'utils'", []
 
     def _vldt(s):
-        if set(s) - set(string.ascii_lowercase):
+        if set(s) - _valid_submodule_chars:
             raise ValueError("Illegal character in submodule name: %s" % s)
         return s
 
