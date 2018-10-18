@@ -18,7 +18,7 @@ _valid_submodule_chars.add("_")
 
 def _create_project_level(proj_level, path, verbose, name, bear_version,
                           description, requirements, header, author, email,
-                          python, c, git_user, license, year):
+                          python, c, git_user, license, year, travis):
     """Create the top-level of the project (not the package itself)
 
     Reads/writes the following files to the top of the project-level, editing
@@ -47,8 +47,9 @@ def _create_project_level(proj_level, path, verbose, name, bear_version,
 
     # The yml file to configure Travis CI/CD. You'll have to include your
     # own pypi credentials to deploy anything
-    read_write(join(proj_level, ".travis.txt"), write_to_dir=path,
-               suffix=".yml", verbose=verbose, package_name=name)
+    if travis:
+        read_write(join(proj_level, ".travis.txt"), write_to_dir=path,
+                   suffix=".yml", verbose=verbose, package_name=name)
 
     # The MANIFEST for the project
     read_write(join(proj_level, "MANIFEST.txt"), write_to_dir=path,
@@ -322,7 +323,10 @@ def _create_ci_build_tools(ci_templates, path, name, verbose, c, proj_level,
     """
     # Build the build_tools directory
     build_tools = join(path, "build_tools")
-    os.mkdir(build_tools)
+
+    # Only build it if either will be created...
+    if circle or travis:
+        os.mkdir(build_tools)
 
     # The build_tools templates directories
     circle_level = join(ci_templates, "circle")
@@ -623,7 +627,7 @@ def make_package(header, bear_location, bear_version,
                           description=description, requirements=requirements,
                           header=header, author=author, email=email,
                           python=python, c=c, git_user=git_user,
-                          license=license, year=year)
+                          license=license, year=year, travis=travis)
 
     # Now create the package-level
     _create_package_level(package_templates=pkg_level, path=path, c=c,

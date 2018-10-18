@@ -88,7 +88,7 @@ def create_project_level(c):
                           requirements=validate_requirements(None, c),
                           header=header, author=author, email=email,
                           python=python, c=c, git_user=git_user,
-                          license=lic, year=year)
+                          license=lic, year=year, travis=True)
 
     # Modularize this so we can assert them from other areas as well
     _project_assertions(c)
