@@ -20,6 +20,7 @@ jobs:
           - pypy3-ccache
 
       - checkout
+      - run: ./build_tools/circle/before_install.sh
       - run: ./build_tools/circle/build_test_pypy.sh && ./build_tools/shared/build_test_bear_packages.sh
       - save_cache:
           key: pypy3-ccache-{{ .Branch }}-{{ .BuildNum }}
@@ -36,21 +37,35 @@ jobs:
     - checkout
     - run: make test-lint
 
-  # For documentation deployment
+  # For documentation deployment. You'll need the following environment vars
+  # in your Circle CI settings, otherwise this will not work.
+  #
+  # GH_NAME (your git username)
+  # GH_EMAIL (your git email)
   deploy-doc:
     docker:
     - image: python:3.6
     working_directory: ~/bear
+    branches:
+      only:
+        - master
     steps:
     - checkout
-    - run: make test-lint
+    - run: ./build_tools/circle/before_install.sh
+    - run: make doc-requirements
+    - run: make install
+    - run: ./build_tools/circle/build_push_doc.sh
 
 workflows:
   version: 2
 
   # All PyPy jobs:
-  pypy:
+  testing:
     jobs:
       - pypy36
       - test-linting
+
+  # All deployment
+  deploy:
+    jobs:
       - deploy-doc
