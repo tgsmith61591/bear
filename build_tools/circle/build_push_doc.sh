@@ -80,6 +80,12 @@ rm -r html/
 if [[ "${CIRCLE_BRANCH}" =~ ^master$|^[0-9]+\.[0-9]+\.X$ ]]; then
     git add --all
     git commit -m "[ci skip] publishing updated documentation..."
+
+    # We have to re-add the origin with the GH_TOKEN credentials
+    git remote rm origin
+    git remote add origin https://${GH_NAME}:${GH_TOKEN}@github.com/${GH_NAME}/bear.git
+
+    # NOW we should be able to push it
     git push origin gh-pages
 else
     echo "Not on master, so won't push doc"
