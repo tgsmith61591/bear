@@ -36,6 +36,15 @@ jobs:
     - checkout
     - run: make test-lint
 
+  # For documentation deployment
+  deploy-doc:
+    docker:
+    - image: python:3.6
+    working_directory: ~/bear
+    steps:
+    - checkout
+    - run: make test-lint
+
 workflows:
   version: 2
 
@@ -44,3 +53,4 @@ workflows:
     jobs:
       - pypy36
       - test-linting
+      - deploy-doc
