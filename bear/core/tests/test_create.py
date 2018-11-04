@@ -72,10 +72,12 @@ def _project_assertions(c):
 
     # Test Makefile present
     with open(join(proj_dir, 'Makefile'), 'r') as make:
-        makefile = make.read().lower()
-        assert "flake8 {package_name} | " \
-               "grep -v __init__ | " \
-               "grep -v external".format(package_name=package_name) in makefile
+        makefile = make.read()
+        expected_content = \
+            "$(PYTHON) -m flake8 {package_name} " \
+            "--filename='*.py' --ignore " \
+            "E803,F401,F403,W293,W504".format(package_name=package_name)
+        assert expected_content in makefile
 
 
 @make_and_cleanup_project_path(project_path, package_name)
@@ -270,10 +272,11 @@ def _doc_assertions(c):
 
 @make_and_cleanup_project_path(project_path, package_name)
 def create_documentation(c):
-    _create_doc(doc_templates=doc_level_templates, path=path, name=package_name,
-                requirements=validate_requirements(None, c), verbose=True,
-                bear_version=bear_version, description=description,
-                author=author, year=year, git_user=git_user)
+    _create_doc(doc_templates=doc_level_templates, path=path,
+                name=package_name, requirements=validate_requirements(None, c),
+                verbose=True, bear_version=bear_version,
+                description=description, author=author, year=year,
+                git_user=git_user)
 
     _doc_assertions(c)
 

@@ -1,37 +1,45 @@
 # simple makefile to simplify repetitive build env management tasks under posix
-# this is adopted from the sklearn Makefile. This is REQUIRED for deployment via
-# Travis using the build_many_wheels.sh script
+# this is adopted from the sklearn Makefile
 
 # caution: testing won't work on windows
 
 PYTHON ?= python
-CYTHON ?= cython
-CTAGS ?= ctags
 
-# skip doctests on 32bit python
-BITS := $(shell python -c 'import struct; print(8 * struct.calcsize("P"))')
+.PHONY: clean develop test
 
-all: clean inplace #test
-
-clean-ctags:
-	rm -f tags
-
-clean: clean-ctags
+clean:
 	$(PYTHON) setup.py clean
 	rm -rf dist
+	rm -rf build
 
-in: inplace # just a shortcut
-inplace:
-	$(PYTHON) setup.py build_ext -i
+requirements:
+	$(PYTHON) -m pip install -r requirements.txt
+
+develop: requirements
+	$(PYTHON) setup.py develop
+
+install: requirements
+	$(PYTHON) setup.py install
+
+# test-sphinxext:
+#	$(NOSETESTS) -s -v doc/sphinxext/
+#test-doc:
+#ifeq ($(BITS),64)
+#	$(NOSETESTS) -s -v doc/*.rst doc/modules/ doc/datasets/ \
+#	doc/developers doc/tutorial/basic doc/tutorial/statistical_inference \
+#	doc/tutorial/text_analytics
+#endif
+
+test-requirements:
+	$(PYTHON) -m pip install pytest pytest-cov flake8
+
+test-lint: test-requirements
+	$(PYTHON) -m flake8 {package_name} --filename='*.py' --ignore E803,F401,F403,W293,W504
+
+test-unit: test-requirements
+	$(PYTHON) -m pytest -v --durations=20 --cov-config .coveragerc --cov {package_name}
+
+test: develop test-unit test-lint
 
 trailing-spaces:
 	find python -name "*.py" -exec perl -pi -e 's/[ \t]*$$//' {braces} \;
-
-ctags:
-	# make tags for symbol based navigation in emacs and vim
-	# Install with: sudo apt-get install exuberant-ctags
-	$(CTAGS) --python-kinds=-i -R {package_name}
-
-code-analysis:
-	flake8 {package_name} | grep -v __init__ | grep -v external
-	pylint -E -i y {package_name}/ -d E1103,E0611,E1101

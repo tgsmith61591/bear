@@ -4,33 +4,39 @@
 # caution: testing won't work on windows
 
 PYTHON ?= python
-CYTHON ?= cython
-CTAGS ?= ctags
 
-# skip doctests on 32bit python
-BITS := $(shell python -c 'import struct; print(8 * struct.calcsize("P"))')
+.PHONY: clean develop test
 
-all: clean inplace #test
-
-clean-ctags:
-	rm -f tags
-
-clean: clean-ctags
+clean:
 	$(PYTHON) setup.py clean
 	rm -rf dist
+	rm -rf build
 
-in: inplace # just a shortcut
-inplace:
-	$(PYTHON) setup.py build_ext -i
+requirements:
+	$(PYTHON) -m pip install -r requirements.txt
 
-trailing-spaces:
-	find python -name "*.py" -exec perl -pi -e 's/[ \t]*$$//' {} \;
+develop: requirements
+	$(PYTHON) setup.py develop
 
-ctags:
-	# make tags for symbol based navigation in emacs and vim
-	# Install with: sudo apt-get install exuberant-ctags
-	$(CTAGS) --python-kinds=-i -R bear
+install: requirements
+	$(PYTHON) setup.py install
 
-code-analysis:
-	flake8 bear | grep -v __init__ | grep -v external
-	pylint -E -i y bear/ -d E1103,E0611,E1101
+# test-sphinxext:
+#	$(NOSETESTS) -s -v doc/sphinxext/
+#test-doc:
+#ifeq ($(BITS),64)
+#	$(NOSETESTS) -s -v doc/*.rst doc/modules/ doc/datasets/ \
+#	doc/developers doc/tutorial/basic doc/tutorial/statistical_inference \
+#	doc/tutorial/text_analytics
+#endif
+
+test-requirements:
+	$(PYTHON) -m pip install pytest pytest-cov flake8
+
+test-lint: test-requirements
+	$(PYTHON) -m flake8 bear --filename='*.py' --ignore E803,F401,F403,W293,W504
+
+test-unit: test-requirements
+	$(PYTHON) -m pytest -v --durations=20 --cov-config .coveragerc --cov bear
+
+test: develop test-unit test-lint

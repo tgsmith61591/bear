@@ -57,7 +57,7 @@ def test_validate_requirements():
     req = validate_requirements("a>=1, g, b<3", True)
     assert "numpy>=1.12" in req
     assert sorted(req.split()) == \
-           ['a>=1', 'b<3', 'cython>=0.23', 'g', 'numpy>=1.12'], req.split()
+        ['a>=1', 'b<3', 'cython>=0.23', 'g', 'numpy>=1.12'], req.split()
 
 
 def test_validate_license():

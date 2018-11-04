@@ -87,9 +87,9 @@ if __name__ == "__main__":
                                "'BSD-3', or 'GPL'")
 
     c_parser.add_argument("--project_name", dest="project_name", type=str,
-                          help="The name of the package to create. This should "
-                               "be a string and should not contain any OS-"
-                               "reserved characters.")
+                          help="The name of the package to create. This "
+                               "should be a string and should not contain any "
+                               "OS-reserved characters.")
 
     c_parser.add_argument("--path", dest="path", type=str,
                           help="The absolute path to the directory where the "
@@ -119,9 +119,9 @@ if __name__ == "__main__":
 
     c_parser.add_argument("--version", dest="version", type=str,
                           help="The version of your package. This should be a "
-                               "string in the format: <MAJOR>.<MINOR>.<MICRO>, "
-                               "i.e., 1.0.5.\nThis is optional. The default "
-                               "value is '1.0.0'")
+                               "string in the format: <MAJOR>.<MINOR>."
+                               "<MICRO>, i.e., 1.0.5.\nThis is optional. The "
+                               "default value is '1.0.0'")
 
     # Optional arguments that will enable various CI solutions
     c_parser.add_argument("--circle", dest="circle", action="store_true",
