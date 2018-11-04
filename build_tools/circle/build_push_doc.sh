@@ -32,6 +32,10 @@ else
     git checkout --orphan gh-pages
 fi
 
+# Make sure to set the credentials!
+git config --global user.email "$GH_EMAIL" > /dev/null 2>&1
+git config --global user.name "$GH_NAME" > /dev/null 2>&1
+
 # If the branch gh-pages does not exist, this will have errored
 gh_status=$?
 if [[ ${gh_status} == 1  ]]; then
