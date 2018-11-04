@@ -1,0 +1,12 @@
+:mod:`bear.utils`.validate_path
+============================================
+
+.. currentmodule:: bear.utils
+
+.. autofunction:: validate_path
+
+.. include:: bear.utils.validate_path.examples
+
+.. raw:: html
+
+    <div class="clearer"></div>

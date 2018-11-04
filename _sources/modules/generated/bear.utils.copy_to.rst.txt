@@ -1,0 +1,12 @@
+:mod:`bear.utils`.copy_to
+======================================
+
+.. currentmodule:: bear.utils
+
+.. autofunction:: copy_to
+
+.. include:: bear.utils.copy_to.examples
+
+.. raw:: html
+
+    <div class="clearer"></div>

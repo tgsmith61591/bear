@@ -1,0 +1,12 @@
+:mod:`bear.utils`.validate_license
+===============================================
+
+.. currentmodule:: bear.utils
+
+.. autofunction:: validate_license
+
+.. include:: bear.utils.validate_license.examples
+
+.. raw:: html
+
+    <div class="clearer"></div>

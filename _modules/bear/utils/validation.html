@@ -1,0 +1,453 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>bear.utils.validation &mdash; bear 0.1.9 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/gallery.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/fields.css" type="text/css" />
+    <link rel="author" title="About these documents" href="../../../about.html" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> bear
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.9
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/classes.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../auto_examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../whats_new.html">What's New?</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">bear</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>bear.utils.validation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for bear.utils.validation</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span>
+
+<span class="kn">import</span> <span class="nn">six</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">pkg_resources</span> <span class="k">import</span> <span class="n">parse_version</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;validate_args&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;validate_license&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;validate_path&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;validate_project_name&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;validate_requirements&#39;</span>
+<span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">_getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Try to get the attribute as if the object is a Namespace, but if it</span>
+<span class="sd">    fails, get it as it if were a key from a dictionary. This allows us to</span>
+<span class="sd">    play nice with both Namespace objects (method=&#39;create&#39;) as well as</span>
+<span class="sd">    dicts (method=&#39;yaml&#39;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">obj</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span>  <span class="c1"># may fail with KeyError or AttributeError (__get__)</span>
+
+
+<div class="viewcode-block" id="validate_args"><a class="viewcode-back" href="../../../modules/generated/bear.utils.validate_args.html#bear.utils.validate_args">[docs]</a><span class="k">def</span> <span class="nf">validate_args</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get the validated args.</span>
+
+<span class="sd">    The project name is validated to be non-null and not contain illegal</span>
+<span class="sd">    characters, the requirements are validated, and the path is validated</span>
+<span class="sd">    to end with the ``name`` parameter.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    vargs : dict</span>
+<span class="sd">        A dictionary of validated arguments.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># The project name is the only real required value</span>
+    <span class="n">nm</span> <span class="o">=</span> <span class="n">validate_project_name</span><span class="p">(</span><span class="n">_getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;project_name&#39;</span><span class="p">))</span>
+
+    <span class="c1"># Validate requirements, if any...</span>
+    <span class="n">req</span> <span class="o">=</span> <span class="n">validate_requirements</span><span class="p">(</span><span class="n">_getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;requirements&#39;</span><span class="p">),</span>
+                                <span class="n">_getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">))</span>
+
+    <span class="c1"># Validate path</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">validate_path</span><span class="p">(</span><span class="n">_getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;path&#39;</span><span class="p">),</span> <span class="n">nm</span><span class="p">)</span>
+
+    <span class="c1"># Validate the license</span>
+    <span class="n">license</span> <span class="o">=</span> <span class="n">validate_license</span><span class="p">(</span><span class="n">_getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;license&#39;</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">author</span><span class="o">=</span><span class="n">_getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;author&#39;</span><span class="p">),</span>
+                <span class="n">c</span><span class="o">=</span><span class="n">_getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">),</span>
+                <span class="n">description</span><span class="o">=</span><span class="n">_getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;description&#39;</span><span class="p">),</span>
+                <span class="n">email</span><span class="o">=</span><span class="n">_getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;email&#39;</span><span class="p">),</span>
+                <span class="n">git_user</span><span class="o">=</span><span class="n">_getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;git_user&#39;</span><span class="p">),</span>
+                <span class="n">license</span><span class="o">=</span><span class="n">license</span><span class="p">,</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">nm</span><span class="p">,</span>
+                <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
+                <span class="n">python</span><span class="o">=</span><span class="n">_getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;python&#39;</span><span class="p">),</span>
+                <span class="n">requirements</span><span class="o">=</span><span class="n">req</span><span class="p">,</span>
+                <span class="n">submodules</span><span class="o">=</span><span class="n">_getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;submodules&#39;</span><span class="p">),</span>
+                <span class="n">verbose</span><span class="o">=</span><span class="n">_getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;verbose&#39;</span><span class="p">),</span>
+                <span class="n">version</span><span class="o">=</span><span class="n">_getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;version&#39;</span><span class="p">),</span>
+                <span class="n">travis</span><span class="o">=</span><span class="n">_getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;travis&#39;</span><span class="p">),</span>
+                <span class="n">circle</span><span class="o">=</span><span class="n">_getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;circle&#39;</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="validate_license"><a class="viewcode-back" href="../../../modules/generated/bear.utils.validate_license.html#bear.utils.validate_license">[docs]</a><span class="k">def</span> <span class="nf">validate_license</span><span class="p">(</span><span class="n">license</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Validate the license.</span>
+
+<span class="sd">    Make sure the provided license is one that exists within the</span>
+<span class="sd">    Bear templates.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    license : str or unicode</span>
+<span class="sd">        The name of the license to assign the package. Will raise if the</span>
+<span class="sd">        license does not exist.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    license : str or unicode</span>
+<span class="sd">        The name of the license.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># These are the names of the existing licenses</span>
+    <span class="n">valid</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;BSD-3&#39;</span><span class="p">,</span> <span class="s1">&#39;GPL&#39;</span><span class="p">,</span> <span class="s1">&#39;MIT&#39;</span><span class="p">}</span>
+    <span class="n">license_u</span> <span class="o">=</span> <span class="n">license</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">license_u</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">valid</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Expected license to be in </span><span class="si">%s</span><span class="s2">, but got </span><span class="si">%s</span><span class="s2">&quot;</span>
+                         <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">valid</span><span class="p">),</span> <span class="n">license</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">license_u</span></div>
+
+
+<div class="viewcode-block" id="validate_path"><a class="viewcode-back" href="../../../modules/generated/bear.utils.validate_path.html#bear.utils.validate_path">[docs]</a><span class="k">def</span> <span class="nf">validate_path</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Validate the location where the path will be written.</span>
+
+<span class="sd">    Make sure the path is legal. If the path is not truthy, set it to &quot;.&quot;</span>
+<span class="sd">    (here). Next, if the path does not end with the ``name``, set the path</span>
+<span class="sd">    to end with ``name``.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    path : str, unicode or None</span>
+<span class="sd">        The absolute path to where the package will be created.</span>
+
+<span class="sd">    name : str, unicode or None</span>
+<span class="sd">        The name of the package to create. Will raise if None or if contains</span>
+<span class="sd">        illegal characters.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    path : str or unicode</span>
+<span class="sd">        The path to the package.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="p">:</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span>
+
+    <span class="c1"># if the path doesn&#39;t end with &#39;name&#39;, make it. We have also already</span>
+    <span class="c1"># validated that the name is not &#39;.&#39; or &#39;..&#39; so we don&#39;t get &#39;./.&#39; or</span>
+    <span class="c1"># anything dangerous</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
+    <span class="c1"># if the path already exists, raise</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="s2">&quot;Path (</span><span class="si">%s</span><span class="s2">) already exists!&quot;</span> <span class="o">%</span> <span class="n">path</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">path</span></div>
+
+
+<div class="viewcode-block" id="validate_project_name"><a class="viewcode-back" href="../../../modules/generated/bear.utils.validate_project_name.html#bear.utils.validate_project_name">[docs]</a><span class="k">def</span> <span class="nf">validate_project_name</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Validate the project name.</span>
+
+<span class="sd">    Make sure the package name is legal and does not contain reserved</span>
+<span class="sd">    characters. If the name is None, will also raise.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str, unicode or None</span>
+<span class="sd">        The name of the package to create. Will raise if None or if contains</span>
+<span class="sd">        illegal characters.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    name : str or unicode</span>
+<span class="sd">        The name of the package.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;&#39;project_name&#39; is a required argument!&quot;</span><span class="p">)</span>
+
+    <span class="c1"># If the name is &#39;.&#39; or any variant therein... we need to raise</span>
+    <span class="n">sname</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">sname</span> <span class="o">==</span> <span class="p">{</span><span class="s1">&#39;.&#39;</span><span class="p">}:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot set &#39;project_name&#39; to </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
+
+    <span class="c1"># If there are illegal values in the project name, raise</span>
+    <span class="n">illegal_intersection</span> <span class="o">=</span> <span class="n">sname</span><span class="o">.</span><span class="n">intersection</span><span class="p">({</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">linesep</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">pathsep</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">,</span>
+    <span class="p">})</span>
+
+    <span class="k">if</span> <span class="n">illegal_intersection</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Illegal value(s) found in project name: </span><span class="si">%r</span><span class="s2">&quot;</span>
+                         <span class="o">%</span> <span class="n">illegal_intersection</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">name</span></div>
+
+
+<div class="viewcode-block" id="validate_requirements"><a class="viewcode-back" href="../../../modules/generated/bear.utils.validate_requirements.html#bear.utils.validate_requirements">[docs]</a><span class="k">def</span> <span class="nf">validate_requirements</span><span class="p">(</span><span class="n">req</span><span class="p">,</span> <span class="n">cython_required</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Validate the package requirements.</span>
+
+<span class="sd">    Validate and format the package requirements to get a new-line separated</span>
+<span class="sd">    list of requirements to write to requirements.txt. Also, since Numpy is</span>
+<span class="sd">    required to build the package that&#39;s generated, if Numpy is not present</span>
+<span class="sd">    in the requirements, it will be added.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    req : str, unicode or None</span>
+<span class="sd">        The requirements. Should be a comma-separated list of requirements</span>
+<span class="sd">        that will be written to &#39;requirements.txt&#39; split across new lines.</span>
+
+<span class="sd">    cython_required : bool</span>
+<span class="sd">        Whether cython is required to build the project. If so, it will be</span>
+<span class="sd">        validated that cython exists in the requirements.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    new_requirements : str or unicode</span>
+<span class="sd">        A string of requirements separated by newline characters to be</span>
+<span class="sd">        written into requirements.txt</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">req</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">req</span> <span class="k">else</span> <span class="n">req</span>
+    <span class="n">requirements</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">token</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">req</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">linesep</span><span class="p">,</span> <span class="s2">&quot;,&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+    <span class="p">]</span>
+
+    <span class="c1"># Hard requirements. Numpy is ALWAYS required, but cython is only if</span>
+    <span class="c1"># cython_required</span>
+    <span class="n">min_numpy</span> <span class="o">=</span> <span class="s2">&quot;1.12&quot;</span>
+    <span class="n">min_cython</span> <span class="o">=</span> <span class="s2">&quot;0.23&quot;</span>
+    <span class="n">hard_requirements</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">numpy</span><span class="o">=</span><span class="s2">&quot;&gt;=</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">min_numpy</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">cython_required</span><span class="p">:</span>
+        <span class="n">hard_requirements</span><span class="p">[</span><span class="s1">&#39;cython&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&gt;=</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">min_cython</span>
+
+    <span class="c1"># prioritize the most recent version, if specified</span>
+    <span class="c1"># def _which_version(existing, provided):</span>
+    <span class="c1">#     if not existing:</span>
+    <span class="c1">#         return provided</span>
+    <span class="c1">#     if not provided:</span>
+    <span class="c1">#         return existing</span>
+    <span class="c1">#</span>
+    <span class="c1">#     # Otherwise return the specified version to appease the user</span>
+    <span class="c1">#     return provided</span>
+
+    <span class="c1"># For each requirement, determine whether it&#39;s in the hard requirements</span>
+    <span class="n">new_requirements</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">req</span> <span class="ow">in</span> <span class="n">requirements</span><span class="p">:</span>
+        <span class="c1"># Re-assign the hard-requirements ref to remove the ones that are</span>
+        <span class="c1"># already present</span>
+        <span class="n">hard_requirements</span> <span class="o">=</span> <span class="p">{</span><span class="n">pkg</span><span class="p">:</span> <span class="n">ver</span>
+                             <span class="k">for</span> <span class="n">pkg</span><span class="p">,</span> <span class="n">ver</span> <span class="ow">in</span> <span class="n">six</span><span class="o">.</span><span class="n">iteritems</span><span class="p">(</span><span class="n">hard_requirements</span><span class="p">)</span>
+                             <span class="k">if</span> <span class="ow">not</span> <span class="n">req</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">pkg</span><span class="p">)}</span>
+        <span class="c1"># Filter out the non-truthy ones</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">req</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">new_requirements</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+    <span class="c1"># if there are still requirements, append them</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">six</span><span class="o">.</span><span class="n">iteritems</span><span class="p">(</span><span class="n">hard_requirements</span><span class="p">):</span>
+        <span class="n">new_requirements</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span> <span class="o">+</span> <span class="n">v</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">linesep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">new_requirements</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Taylor G Smith
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../../',
+              VERSION:'0.1.9',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

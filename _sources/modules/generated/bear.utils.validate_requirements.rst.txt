@@ -1,0 +1,12 @@
+:mod:`bear.utils`.validate_requirements
+====================================================
+
+.. currentmodule:: bear.utils
+
+.. autofunction:: validate_requirements
+
+.. include:: bear.utils.validate_requirements.examples
+
+.. raw:: html
+
+    <div class="clearer"></div>

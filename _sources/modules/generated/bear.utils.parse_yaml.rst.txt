@@ -1,0 +1,12 @@
+:mod:`bear.utils`.parse_yaml
+=========================================
+
+.. currentmodule:: bear.utils
+
+.. autofunction:: parse_yaml
+
+.. include:: bear.utils.parse_yaml.examples
+
+.. raw:: html
+
+    <div class="clearer"></div>

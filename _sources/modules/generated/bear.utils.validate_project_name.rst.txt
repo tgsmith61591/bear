@@ -1,0 +1,12 @@
+:mod:`bear.utils`.validate_project_name
+====================================================
+
+.. currentmodule:: bear.utils
+
+.. autofunction:: validate_project_name
+
+.. include:: bear.utils.validate_project_name.examples
+
+.. raw:: html
+
+    <div class="clearer"></div>

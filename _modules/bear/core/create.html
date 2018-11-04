@@ -1,0 +1,865 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>bear.core.create &mdash; bear 0.1.9 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/gallery.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/fields.css" type="text/css" />
+    <link rel="author" title="About these documents" href="../../../about.html" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> bear
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.9
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/classes.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../auto_examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../whats_new.html">What's New?</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">bear</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>bear.core.create</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for bear.core.create</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span>
+
+<span class="kn">from</span> <span class="nn">..utils.io</span> <span class="k">import</span> <span class="n">read_write</span><span class="p">,</span> <span class="n">copy_to</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="k">import</span> <span class="n">join</span>
+<span class="kn">import</span> <span class="nn">string</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;make_package&#39;</span><span class="p">]</span>
+
+<span class="c1"># Valid characters for submodules</span>
+<span class="n">_valid_submodule_chars</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">ascii_lowercase</span><span class="p">)</span>
+<span class="n">_valid_submodule_chars</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_create_project_level</span><span class="p">(</span><span class="n">proj_level</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bear_version</span><span class="p">,</span>
+                          <span class="n">description</span><span class="p">,</span> <span class="n">requirements</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">author</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span>
+                          <span class="n">python</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">git_user</span><span class="p">,</span> <span class="n">license</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span> <span class="n">travis</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create the top-level of the project (not the package itself)</span>
+
+<span class="sd">    Reads/writes the following files to the top of the project-level, editing</span>
+<span class="sd">    each template with the package name or other necessary variables::</span>
+
+<span class="sd">        .coveragerc</span>
+<span class="sd">        .gitignore</span>
+<span class="sd">        .travis.yml</span>
+<span class="sd">        LICENSE</span>
+<span class="sd">        MANIFEST.in</span>
+<span class="sd">        README.md</span>
+<span class="sd">        requirements.txt</span>
+<span class="sd">        setup.py</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># NOTE:</span>
+    <span class="c1"># proj_level : The project-level TEMPLATE directory</span>
+    <span class="c1"># path : The TARGET path for the project</span>
+
+    <span class="c1"># This is the coverage configuration</span>
+    <span class="n">read_write</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">proj_level</span><span class="p">,</span> <span class="s2">&quot;.coveragerc&quot;</span><span class="p">),</span> <span class="n">write_to_dir</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
+               <span class="n">suffix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">package_name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="c1"># This is the gitignore file</span>
+    <span class="n">read_write</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">proj_level</span><span class="p">,</span> <span class="s2">&quot;.gitignore&quot;</span><span class="p">),</span> <span class="n">write_to_dir</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
+               <span class="n">suffix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
+    <span class="c1"># The yml file to configure Travis CI/CD. You&#39;ll have to include your</span>
+    <span class="c1"># own pypi credentials to deploy anything</span>
+    <span class="k">if</span> <span class="n">travis</span><span class="p">:</span>
+        <span class="n">read_write</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">proj_level</span><span class="p">,</span> <span class="s2">&quot;.travis.txt&quot;</span><span class="p">),</span> <span class="n">write_to_dir</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
+                   <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.yml&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">package_name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="c1"># The MANIFEST for the project</span>
+    <span class="n">read_write</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">proj_level</span><span class="p">,</span> <span class="s2">&quot;MANIFEST.txt&quot;</span><span class="p">),</span> <span class="n">write_to_dir</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
+               <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.in&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">package_name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="c1"># The README for the project</span>
+    <span class="n">read_write</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">proj_level</span><span class="p">,</span> <span class="s2">&quot;README.txt&quot;</span><span class="p">),</span> <span class="n">write_to_dir</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
+               <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.md&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">package_name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+               <span class="n">bear_version</span><span class="o">=</span><span class="n">bear_version</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">)</span>
+
+    <span class="c1"># The requirements file</span>
+    <span class="n">read_write</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">proj_level</span><span class="p">,</span> <span class="s2">&quot;requirements.txt&quot;</span><span class="p">),</span> <span class="n">write_to_dir</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
+               <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.txt&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">requirements</span><span class="o">=</span><span class="n">requirements</span><span class="p">)</span>
+
+    <span class="c1"># The setup.py. If the description is empty, we need to put something there</span>
+    <span class="c1"># so that the docstring at the top is not empty...</span>
+    <span class="n">read_write</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">proj_level</span><span class="p">,</span> <span class="s2">&quot;setup.txt&quot;</span><span class="p">),</span> <span class="n">write_to_dir</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
+               <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.py&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="n">header</span><span class="p">,</span> <span class="n">package_name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+
+               <span class="c1"># Make sure the docstring in the head gets something...</span>
+               <span class="n">description</span><span class="o">=</span><span class="n">description</span> <span class="k">if</span> <span class="n">description</span> <span class="k">else</span> <span class="n">name</span><span class="p">,</span>
+               <span class="n">author</span><span class="o">=</span><span class="n">author</span><span class="p">,</span> <span class="n">author_email</span><span class="o">=</span><span class="n">email</span><span class="p">,</span> <span class="n">python_requires</span><span class="o">=</span><span class="n">python</span><span class="p">,</span>
+               <span class="n">c</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">c</span><span class="p">),</span> <span class="n">license</span><span class="o">=</span><span class="n">license</span><span class="p">,</span> <span class="n">git_username</span><span class="o">=</span><span class="n">git_user</span><span class="p">,</span>
+               <span class="n">package_name_upper</span><span class="o">=</span><span class="n">name</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span>
+
+    <span class="c1"># Now, move over the appropriate license</span>
+    <span class="n">read_write</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">proj_level</span><span class="p">,</span> <span class="s2">&quot;licenses&quot;</span><span class="p">,</span> <span class="n">license</span><span class="p">),</span> <span class="n">write_to_dir</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
+               <span class="n">overwrite_name</span><span class="o">=</span><span class="s2">&quot;LICENSE&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+               <span class="n">package_name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">year</span><span class="o">=</span><span class="n">year</span><span class="p">)</span>
+
+    <span class="c1"># Create the Makefile. This is necessary for using the build_many_wheels</span>
+    <span class="c1"># deploy script on Travis.</span>
+    <span class="n">read_write</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">proj_level</span><span class="p">,</span> <span class="s2">&quot;Makefile&quot;</span><span class="p">),</span> <span class="n">write_to_dir</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
+               <span class="n">overwrite_name</span><span class="o">=</span><span class="s2">&quot;Makefile&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+               <span class="n">package_name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">braces</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_get_submodules</span><span class="p">(</span><span class="n">submodules</span><span class="p">):</span>
+    <span class="c1"># If no submodules, bail early.</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">submodules</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;# Submodules, e.g., &#39;utils&#39;&quot;</span><span class="p">,</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">_vldt</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">-</span> <span class="n">_valid_submodule_chars</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Illegal character in submodule name: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">s</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">s</span>
+
+    <span class="c1"># Get a string for the __init__ and a list for the setup</span>
+    <span class="n">submodule_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">sub</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">submodules</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)):</span>
+        <span class="c1"># Trim it</span>
+        <span class="n">sub</span> <span class="o">=</span> <span class="n">sub</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+        <span class="c1"># if it&#39;s empty, continue</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">sub</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">submodule_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_vldt</span><span class="p">(</span><span class="n">sub</span><span class="p">))</span>
+
+    <span class="c1"># Now join them all up with &quot;, &quot; and add ticks around the names for the</span>
+    <span class="c1"># __init__ file</span>
+    <span class="n">init_submodules</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="s2">&quot;&#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">s</span><span class="p">,</span> <span class="n">submodule_list</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">init_submodules</span><span class="p">,</span> <span class="n">submodule_list</span>
+
+
+<span class="k">def</span> <span class="nf">_create_package_level</span><span class="p">(</span><span class="n">package_templates</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span>
+                          <span class="n">name</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">submodules</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create the package-level files and submodules.</span>
+
+<span class="sd">    Reads/writes the following files with the appropriate edits (version, name,</span>
+<span class="sd">    headers, etc.)::</span>
+
+<span class="sd">        {PACKAGE}/__init__.py</span>
+<span class="sd">        {PACKAGE}/setup.py</span>
+
+<span class="sd">    If ``c`` is True, creates the following additional files within the</span>
+<span class="sd">    {PACKAGE} directory::</span>
+
+<span class="sd">        __check_build/</span>
+<span class="sd">          |__ tests/</span>
+<span class="sd">          |     |__ __init__.py</span>
+<span class="sd">          |     |__ test_check_build.py</span>
+<span class="sd">          |__ __init__.py</span>
+<span class="sd">          |__ _check_build.pyx</span>
+<span class="sd">          |__ setup.py</span>
+
+<span class="sd">        _build_utils/</span>
+<span class="sd">          |__ __init__.py</span>
+
+<span class="sd">    These utilities are used within the package&#39;s ``__init__.py`` to determine</span>
+<span class="sd">    whether the package was successfully built.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    package_templates : str or unicode</span>
+<span class="sd">        The absolute path to the bear templates directory where the package</span>
+<span class="sd">        templates are maintained.</span>
+
+<span class="sd">    path : str or unicode</span>
+<span class="sd">        The absolute path to the location where the package will be created.</span>
+<span class="sd">        The package will be built at ``{path}/name``</span>
+
+<span class="sd">    c : bool</span>
+<span class="sd">        Whether C is required to build the package. If True, two new</span>
+<span class="sd">        directories will be added to the package::</span>
+
+<span class="sd">            __check_build</span>
+<span class="sd">            _build_utils</span>
+
+<span class="sd">    version : str or unicode</span>
+<span class="sd">        The version of the package to build</span>
+
+<span class="sd">    verbose : bool</span>
+<span class="sd">        Whether to build in verbose mode.</span>
+
+<span class="sd">    name : str or unicode</span>
+<span class="sd">        The name of the package</span>
+
+<span class="sd">    header : str or unicode</span>
+<span class="sd">        The header to place in created templates. Attributes the creation to</span>
+<span class="sd">        Bear.</span>
+
+<span class="sd">    submodules : str, unicode or None</span>
+<span class="sd">        The submodules to create within the package.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">package</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">package</span><span class="p">)</span>
+
+    <span class="c1"># Unpack the submodules/validate them</span>
+    <span class="n">submodules</span><span class="p">,</span> <span class="n">submodule_list</span> <span class="o">=</span> <span class="n">_get_submodules</span><span class="p">(</span><span class="n">submodules</span><span class="p">)</span>
+
+    <span class="c1"># Write the __init__ with the submodules, if any</span>
+    <span class="n">read_write</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">package_templates</span><span class="p">,</span> <span class="s2">&quot;__init__.txt&quot;</span><span class="p">),</span> <span class="n">write_to_dir</span><span class="o">=</span><span class="n">package</span><span class="p">,</span>
+               <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.py&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="n">header</span><span class="p">,</span>
+               <span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">,</span> <span class="n">package_name_upper</span><span class="o">=</span><span class="n">name</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span>
+               <span class="n">package_name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+
+               <span class="c1"># If cython build, import the __check_build at the head</span>
+               <span class="n">c</span><span class="o">=</span><span class="s2">&quot;from . import __check_build&quot;</span> <span class="k">if</span> <span class="n">c</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+               <span class="n">submodules</span><span class="o">=</span><span class="n">submodules</span><span class="p">)</span>
+
+    <span class="c1"># For each submodule, create it within the package</span>
+    <span class="n">setup_script_packages</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">setup_script_test_packages</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">init_template</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">package_templates</span><span class="p">,</span> <span class="s2">&quot;submodule_init_template.txt&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="n">submodule_list</span><span class="p">:</span>
+        <span class="n">dest</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">package</span><span class="p">,</span> <span class="n">module</span><span class="p">)</span>
+        <span class="n">test_dest</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="s2">&quot;tests&quot;</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">test_dest</span><span class="p">)</span>  <span class="c1"># makes both the dest/ AND tests/</span>
+
+        <span class="c1"># Write the __init__ file for the submodule</span>
+        <span class="n">read_write</span><span class="p">(</span><span class="n">init_template</span><span class="p">,</span> <span class="n">write_to_dir</span><span class="o">=</span><span class="n">dest</span><span class="p">,</span>
+                   <span class="n">overwrite_name</span><span class="o">=</span><span class="s2">&quot;__init__.py&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+                   <span class="n">module_name</span><span class="o">=</span><span class="n">module</span><span class="p">)</span>
+
+        <span class="c1"># And write an empty __init__ into the tests directory. We can &quot;hack&quot;</span>
+        <span class="c1"># here and just copy the empty __init__ we have lying in the</span>
+        <span class="c1"># __check_build template directory... Hack alert!!!</span>
+        <span class="n">copy_to</span><span class="p">(</span>
+            <span class="n">join</span><span class="p">(</span><span class="n">package_templates</span><span class="p">,</span> <span class="s2">&quot;__check_build&quot;</span><span class="p">,</span> <span class="s2">&quot;tests&quot;</span><span class="p">,</span> <span class="s2">&quot;__init__.py&quot;</span><span class="p">),</span>
+            <span class="n">write_to_dir</span><span class="o">=</span><span class="n">test_dest</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
+        <span class="c1"># And add the package to the setup script list we&#39;ll write later</span>
+        <span class="n">setup_script_packages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;config.add_subpackage(&#39;</span><span class="si">%s</span><span class="s2">&#39;)&quot;</span> <span class="o">%</span> <span class="n">module</span><span class="p">)</span>
+        <span class="n">setup_script_test_packages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;config.add_subpackage(&#39;</span><span class="si">%s</span><span class="s2">/tests&#39;)&quot;</span>
+                                          <span class="o">%</span> <span class="n">module</span><span class="p">)</span>
+
+    <span class="c1"># At this point, if we have setup script lines, let&#39;s join them up</span>
+    <span class="k">if</span> <span class="n">setup_script_packages</span><span class="p">:</span>
+        <span class="n">join_key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">linesep</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="mi">4</span>
+        <span class="n">setup_script_packages</span> <span class="o">=</span> <span class="n">join_key</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">setup_script_packages</span><span class="p">)</span>
+        <span class="n">setup_script_test_packages</span> <span class="o">=</span> <span class="n">join_key</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">setup_script_test_packages</span><span class="p">)</span>
+    <span class="c1"># Otherwise, just make it an empty string?</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">setup_script_packages</span> <span class="o">=</span> <span class="n">setup_script_test_packages</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="c1"># If we are using Cython, then we will not comment out the cythonization</span>
+    <span class="c1"># lines. Otherwise we will.</span>
+    <span class="n">read_write</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">package_templates</span><span class="p">,</span> <span class="s2">&quot;setup.txt&quot;</span><span class="p">),</span> <span class="n">write_to_dir</span><span class="o">=</span><span class="n">package</span><span class="p">,</span>
+               <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.py&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="n">header</span><span class="p">,</span>
+               <span class="n">package_name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+
+               <span class="c1"># Insert a comment in front of cython lines if not using cython</span>
+               <span class="n">comment_for_no_c</span><span class="o">=</span><span class="s2">&quot;# &quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">c</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+
+               <span class="c1"># Packages we&#39;re adding</span>
+               <span class="n">setup_script_packages</span><span class="o">=</span><span class="n">setup_script_packages</span><span class="p">,</span>
+               <span class="n">setup_script_test_packages</span><span class="o">=</span><span class="n">setup_script_test_packages</span><span class="p">)</span>
+
+    <span class="c1"># If we&#39;re depending on building C code, we need to create the</span>
+    <span class="c1"># __check_build and _build_utils submodules</span>
+    <span class="k">if</span> <span class="n">c</span><span class="p">:</span>
+        <span class="n">cb_template</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">package_templates</span><span class="p">,</span> <span class="s2">&quot;__check_build&quot;</span><span class="p">)</span>
+        <span class="n">check_build</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">package</span><span class="p">,</span> <span class="s2">&quot;__check_build&quot;</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">check_build</span><span class="p">)</span>
+
+        <span class="n">read_write</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">cb_template</span><span class="p">,</span> <span class="s2">&quot;__init__.txt&quot;</span><span class="p">),</span>
+                   <span class="n">write_to_dir</span><span class="o">=</span><span class="n">check_build</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.py&quot;</span><span class="p">,</span>
+                   <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+                   <span class="n">package_name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="c1"># For the files we just want to copy...</span>
+        <span class="k">for</span> <span class="n">copyfile</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;_check_build.pyx&quot;</span><span class="p">,</span> <span class="s2">&quot;setup.py&quot;</span><span class="p">):</span>
+            <span class="n">copy_to</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">cb_template</span><span class="p">,</span> <span class="n">copyfile</span><span class="p">),</span>
+                    <span class="n">write_to_dir</span><span class="o">=</span><span class="n">check_build</span><span class="p">,</span>
+                    <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
+        <span class="c1"># We also want the test directory</span>
+        <span class="n">cb_tests_template</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">cb_template</span><span class="p">,</span> <span class="s2">&quot;tests&quot;</span><span class="p">)</span>
+        <span class="n">check_build_tests</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">check_build</span><span class="p">,</span> <span class="s2">&quot;tests&quot;</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">check_build_tests</span><span class="p">)</span>
+
+        <span class="c1"># Move the __init__ file</span>
+        <span class="n">copy_to</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">cb_tests_template</span><span class="p">,</span> <span class="s2">&quot;__init__.py&quot;</span><span class="p">),</span>
+                <span class="n">write_to_dir</span><span class="o">=</span><span class="n">check_build_tests</span><span class="p">,</span>
+                <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
+        <span class="c1"># Format the test script itself and put it</span>
+        <span class="n">read_write</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">cb_tests_template</span><span class="p">,</span> <span class="s2">&quot;test_check_build.txt&quot;</span><span class="p">),</span>
+                   <span class="n">write_to_dir</span><span class="o">=</span><span class="n">check_build_tests</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.py&quot;</span><span class="p">,</span>
+                   <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+                   <span class="n">package_name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="c1"># Now move over the _build_utils stuff</span>
+        <span class="n">bu_template</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">package_templates</span><span class="p">,</span> <span class="s2">&quot;_build_utils&quot;</span><span class="p">)</span>
+        <span class="n">build_utils</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">package</span><span class="p">,</span> <span class="s2">&quot;_build_utils&quot;</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">build_utils</span><span class="p">)</span>
+
+        <span class="n">read_write</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">bu_template</span><span class="p">,</span> <span class="s2">&quot;__init__.txt&quot;</span><span class="p">),</span>
+                   <span class="n">write_to_dir</span><span class="o">=</span><span class="n">build_utils</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.py&quot;</span><span class="p">,</span>
+                   <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+                   <span class="n">package_name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_create_ci_build_tools</span><span class="p">(</span><span class="n">ci_templates</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">proj_level</span><span class="p">,</span>
+                           <span class="n">travis</span><span class="p">,</span> <span class="n">circle</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create the CI build/test scripts.</span>
+
+<span class="sd">    Builds CI scripts for Travis and Circle CI. Depending on the versions</span>
+<span class="sd">    required for the package or the dependencies required (i.e., a non-python</span>
+<span class="sd">    dependency), these will likely have to be updated by the user</span>
+<span class="sd">    after-the-fact.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ci_templates : str or unicode</span>
+<span class="sd">        The build_tools examples directory.</span>
+
+<span class="sd">    path : str or unicode</span>
+<span class="sd">        The absolute path to the location where the package will be created.</span>
+<span class="sd">        The package will be built at ``{path}/name``</span>
+
+<span class="sd">    name : str or unicode</span>
+<span class="sd">        The name of the package</span>
+
+<span class="sd">    verbose : bool</span>
+<span class="sd">        Whether to build in verbose mode.</span>
+
+<span class="sd">    c : bool</span>
+<span class="sd">        Whether C is required to build the package. If so, the CI build tools</span>
+<span class="sd">        will be updated accordingly (i.e., GCC requirements, etc.)</span>
+
+<span class="sd">    proj_level : str or unicode</span>
+<span class="sd">        The project-level templates directory.</span>
+
+<span class="sd">    circle : bool</span>
+<span class="sd">        Whether to enable Circle CI tools</span>
+
+<span class="sd">    travis : bool</span>
+<span class="sd">        Whether to enable Travis CI tools</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Build the build_tools directory</span>
+    <span class="n">build_tools</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;build_tools&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Only build it if either will be created...</span>
+    <span class="k">if</span> <span class="n">circle</span> <span class="ow">or</span> <span class="n">travis</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">build_tools</span><span class="p">)</span>
+
+    <span class="c1"># The build_tools templates directories</span>
+    <span class="n">circle_level</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">ci_templates</span><span class="p">,</span> <span class="s2">&quot;circle&quot;</span><span class="p">)</span>
+    <span class="n">trav_level</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">ci_templates</span><span class="p">,</span> <span class="s2">&quot;travis&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Start with Circle CI ----------------------------------------------------</span>
+    <span class="c1"># Make the .circleci/config.yml first, then move over the build script</span>
+    <span class="k">if</span> <span class="n">circle</span><span class="p">:</span>
+        <span class="n">circleci</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;.circleci&quot;</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">circleci</span><span class="p">)</span>
+
+        <span class="n">copy_to</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">proj_level</span><span class="p">,</span> <span class="s2">&quot;.circleci&quot;</span><span class="p">,</span> <span class="s2">&quot;config.yml&quot;</span><span class="p">),</span>
+                <span class="n">write_to_dir</span><span class="o">=</span><span class="n">circleci</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
+        <span class="c1"># Read/write the build_tools/circle/build_test_pypy.sh</span>
+        <span class="n">circle_target</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">build_tools</span><span class="p">,</span> <span class="s2">&quot;circle&quot;</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">circle_target</span><span class="p">)</span>
+        <span class="n">read_write</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">circle_level</span><span class="p">,</span> <span class="s2">&quot;build_test_pypy.txt&quot;</span><span class="p">),</span>
+                   <span class="n">write_to_dir</span><span class="o">=</span><span class="n">circle_target</span><span class="p">,</span>
+                   <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.sh&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+                   <span class="n">package_name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">c</span> <span class="k">else</span> <span class="s2">&quot; Cython&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Now build Travis files --------------------------------------------------</span>
+    <span class="c1"># Create the build_tools/travis components</span>
+    <span class="k">if</span> <span class="n">travis</span><span class="p">:</span>
+        <span class="n">travis_dir</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">build_tools</span><span class="p">,</span> <span class="s2">&quot;travis&quot;</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">travis_dir</span><span class="p">)</span>
+
+        <span class="n">read_write</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">trav_level</span><span class="p">,</span> <span class="s2">&quot;after_success.txt&quot;</span><span class="p">),</span>
+                   <span class="n">write_to_dir</span><span class="o">=</span><span class="n">travis_dir</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.sh&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+                   <span class="n">package_name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="n">read_write</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">trav_level</span><span class="p">,</span> <span class="s2">&quot;before_install.txt&quot;</span><span class="p">),</span>
+                   <span class="n">write_to_dir</span><span class="o">=</span><span class="n">travis_dir</span><span class="p">,</span>
+                   <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.sh&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+                   <span class="n">c</span><span class="o">=</span><span class="s2">&quot;true&quot;</span> <span class="k">if</span> <span class="n">c</span> <span class="k">else</span> <span class="s2">&quot;false&quot;</span><span class="p">)</span>
+
+        <span class="n">read_write</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">trav_level</span><span class="p">,</span> <span class="s2">&quot;before_script.txt&quot;</span><span class="p">),</span>
+                   <span class="n">write_to_dir</span><span class="o">=</span><span class="n">travis_dir</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.sh&quot;</span><span class="p">,</span>
+                   <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
+        <span class="n">copy_to</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">trav_level</span><span class="p">,</span> <span class="s2">&quot;build_manywheels_linux.sh&quot;</span><span class="p">),</span>
+                <span class="n">write_to_dir</span><span class="o">=</span><span class="n">travis_dir</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
+        <span class="n">copy_to</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">trav_level</span><span class="p">,</span> <span class="s2">&quot;build_wheels.sh&quot;</span><span class="p">),</span>
+                <span class="n">write_to_dir</span><span class="o">=</span><span class="n">travis_dir</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
+        <span class="n">read_write</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">trav_level</span><span class="p">,</span> <span class="s2">&quot;install.txt&quot;</span><span class="p">),</span> <span class="n">write_to_dir</span><span class="o">=</span><span class="n">travis_dir</span><span class="p">,</span>
+                   <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;.sh&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;true&quot;</span> <span class="k">if</span> <span class="n">c</span> <span class="k">else</span> <span class="s2">&quot;false&quot;</span><span class="p">)</span>
+
+        <span class="n">copy_to</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">trav_level</span><span class="p">,</span> <span class="s2">&quot;setup.cfg&quot;</span><span class="p">),</span>
+                <span class="n">write_to_dir</span><span class="o">=</span><span class="n">travis_dir</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
+        <span class="n">read_write</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">trav_level</span><span class="p">,</span> <span class="s2">&quot;test_script.txt&quot;</span><span class="p">),</span>
+                   <span class="n">write_to_dir</span><span class="o">=</span><span class="n">travis_dir</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.sh&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+                   <span class="n">package_name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_create_examples_dir</span><span class="p">(</span><span class="n">examples_templates</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create the examples directory.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    examples_templates : str or unicode</span>
+<span class="sd">        The absolute path to the directory containing the examples templates.</span>
+
+<span class="sd">    path : str or unicode</span>
+<span class="sd">        The absolute path to the location where the package will be created.</span>
+<span class="sd">        The package will be built at ``{path}/name``</span>
+
+<span class="sd">    verbose : bool</span>
+<span class="sd">        Whether to build in verbose mode.</span>
+
+<span class="sd">    name : str or unicode</span>
+<span class="sd">        The name of the package</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">examples</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;examples&quot;</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">examples</span><span class="p">)</span>
+    <span class="n">read_write</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">examples_templates</span><span class="p">,</span> <span class="s2">&quot;README.txt&quot;</span><span class="p">),</span>
+               <span class="n">write_to_dir</span><span class="o">=</span><span class="n">examples</span><span class="p">,</span>
+               <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.txt&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+               <span class="n">package_name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_create_doc</span><span class="p">(</span><span class="n">doc_templates</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">requirements</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span>
+                <span class="n">bear_version</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">author</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span> <span class="n">git_user</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create the documentation for the package.</span>
+
+<span class="sd">    This creates a doc/ directory at the project level, and populates the</span>
+<span class="sd">    Sphinx configuration as well as respective Makefiles.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    doc_templates : str or unicode</span>
+<span class="sd">        The path to the Bear templates for documentation.</span>
+
+<span class="sd">    path : str or unicode</span>
+<span class="sd">        The absolute path to the location where the package will be created.</span>
+<span class="sd">        The package will be built at ``{path}/name``</span>
+
+<span class="sd">    name : str or unicode</span>
+<span class="sd">        The name of the package</span>
+
+<span class="sd">    requirements : str or unicode</span>
+<span class="sd">        The package requirements to be written in requirements.txt</span>
+
+<span class="sd">    verbose : bool</span>
+<span class="sd">        Whether to build in verbose mode.</span>
+
+<span class="sd">    bear_version : str or unicode</span>
+<span class="sd">        The version of Bear that created the package.</span>
+
+<span class="sd">    description : str or unicode</span>
+<span class="sd">        The description for the package. This is written into the new</span>
+<span class="sd">        project&#39;s setup.py.</span>
+
+<span class="sd">    year : str or unicode</span>
+<span class="sd">        The year for copyright purposes.</span>
+
+<span class="sd">    author: str or unicode</span>
+<span class="sd">        The package author.</span>
+
+<span class="sd">    git_user : str or unicode</span>
+<span class="sd">        The git username of the author.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># New doc location</span>
+    <span class="n">doc_dir</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;doc&quot;</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">doc_dir</span><span class="p">)</span>
+
+    <span class="c1"># Write the make files</span>
+    <span class="n">read_write</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">doc_templates</span><span class="p">,</span> <span class="s2">&quot;make.txt&quot;</span><span class="p">),</span>
+               <span class="n">write_to_dir</span><span class="o">=</span><span class="n">doc_dir</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.bat&quot;</span><span class="p">,</span>
+               <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">package_name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="n">read_write</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">doc_templates</span><span class="p">,</span> <span class="s2">&quot;Makefile&quot;</span><span class="p">),</span>
+               <span class="n">write_to_dir</span><span class="o">=</span><span class="n">doc_dir</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">package_name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="c1"># Now the RST files</span>
+    <span class="n">fmtreq</span> <span class="o">=</span> <span class="p">(</span><span class="k">lambda</span> <span class="n">req</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">linesep</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;* &quot;</span> <span class="o">+</span> <span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">req</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)]))</span>
+    <span class="n">read_write</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">doc_templates</span><span class="p">,</span> <span class="s2">&quot;setup.txt&quot;</span><span class="p">),</span>
+               <span class="n">write_to_dir</span><span class="o">=</span><span class="n">doc_dir</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.rst&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+               <span class="n">package_name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">bear_version</span><span class="o">=</span><span class="n">bear_version</span><span class="p">,</span>
+               <span class="n">requirements</span><span class="o">=</span><span class="n">fmtreq</span><span class="p">(</span><span class="n">requirements</span><span class="p">))</span>
+
+    <span class="n">read_write</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">doc_templates</span><span class="p">,</span> <span class="s2">&quot;about.txt&quot;</span><span class="p">),</span>
+               <span class="n">write_to_dir</span><span class="o">=</span><span class="n">doc_dir</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.rst&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+               <span class="n">package_name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">bear_version</span><span class="o">=</span><span class="n">bear_version</span><span class="p">,</span>
+               <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span> <span class="n">hashes</span><span class="o">=</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+
+    <span class="n">read_write</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">doc_templates</span><span class="p">,</span> <span class="s2">&quot;user_guide.txt&quot;</span><span class="p">),</span>
+               <span class="n">write_to_dir</span><span class="o">=</span><span class="n">doc_dir</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.rst&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+               <span class="n">package_name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">bear_version</span><span class="o">=</span><span class="n">bear_version</span><span class="p">)</span>
+
+    <span class="c1"># Amend the configuration</span>
+    <span class="n">linkcode_pattern</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;https://github.com/</span><span class="si">%(git_user)s</span><span class="s1">/&#39;</span>
+                        <span class="s1">&#39;</span><span class="si">%(package_name)s</span><span class="s1">/blob/</span><span class="si">{revision}</span><span class="s1">/&#39;</span>
+                        <span class="s1">&#39;</span><span class="si">{package}</span><span class="s1">/</span><span class="si">{path}</span><span class="s1">#L</span><span class="si">{lineno}</span><span class="s1">&#39;</span>
+                        <span class="o">%</span> <span class="nb">dict</span><span class="p">(</span><span class="n">git_user</span><span class="o">=</span><span class="n">git_user</span><span class="p">,</span>
+                               <span class="n">package_name</span><span class="o">=</span><span class="n">name</span><span class="p">))</span>
+    <span class="n">read_write</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">doc_templates</span><span class="p">,</span> <span class="s2">&quot;conf.txt&quot;</span><span class="p">),</span>
+               <span class="n">write_to_dir</span><span class="o">=</span><span class="n">doc_dir</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.py&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+               <span class="n">package_name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">bear_version</span><span class="o">=</span><span class="n">bear_version</span><span class="p">,</span>
+               <span class="n">author_name</span><span class="o">=</span><span class="n">author</span><span class="p">,</span> <span class="n">year</span><span class="o">=</span><span class="n">year</span><span class="p">,</span> <span class="n">git_user</span><span class="o">=</span><span class="n">git_user</span><span class="p">,</span>
+               <span class="n">linkcode_pattern</span><span class="o">=</span><span class="n">linkcode_pattern</span><span class="p">)</span>
+
+    <span class="c1"># Sphinxext dir files and other file copies</span>
+    <span class="n">sphinxext</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">doc_dir</span><span class="p">,</span> <span class="s2">&quot;sphinxext&quot;</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">sphinxext</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;github_link.py&quot;</span><span class="p">,</span> <span class="s2">&quot;MANIFEST.in&quot;</span><span class="p">):</span>
+        <span class="n">copy_to</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">doc_templates</span><span class="p">,</span> <span class="s2">&quot;sphinxext&quot;</span><span class="p">,</span> <span class="n">f</span><span class="p">),</span>
+                <span class="n">write_to_dir</span><span class="o">=</span><span class="n">sphinxext</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
+    <span class="n">copy_to</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">doc_templates</span><span class="p">,</span> <span class="s2">&quot;README.md&quot;</span><span class="p">),</span>
+            <span class="n">write_to_dir</span><span class="o">=</span><span class="n">doc_dir</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
+    <span class="c1"># Now for _static, _templates, includes, etc.</span>
+    <span class="n">templates</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">doc_templates</span><span class="p">,</span> <span class="s2">&quot;_templates&quot;</span><span class="p">)</span>
+    <span class="n">templates_target</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">doc_dir</span><span class="p">,</span> <span class="s2">&quot;_templates&quot;</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">templates_target</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;class.rst&quot;</span><span class="p">,</span> <span class="s2">&quot;class_with_call.rst&quot;</span><span class="p">,</span> <span class="s2">&quot;class_without_init.rst&quot;</span><span class="p">,</span>
+              <span class="s2">&quot;function.rst&quot;</span><span class="p">,</span> <span class="s2">&quot;numpydoc_docstring.rst&quot;</span><span class="p">):</span>
+        <span class="n">copy_to</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">templates</span><span class="p">,</span> <span class="n">f</span><span class="p">),</span> <span class="n">write_to_dir</span><span class="o">=</span><span class="n">templates_target</span><span class="p">,</span>
+                <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
+    <span class="n">static</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">doc_templates</span><span class="p">,</span> <span class="s2">&quot;_static&quot;</span><span class="p">)</span>
+    <span class="n">css</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">static</span><span class="p">,</span> <span class="s2">&quot;css&quot;</span><span class="p">)</span>
+    <span class="n">css_target</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">doc_dir</span><span class="p">,</span> <span class="s2">&quot;_static&quot;</span><span class="p">,</span> <span class="s2">&quot;css&quot;</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">css_target</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;style.css&quot;</span><span class="p">,):</span>
+        <span class="n">copy_to</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">css</span><span class="p">,</span> <span class="n">f</span><span class="p">),</span> <span class="n">write_to_dir</span><span class="o">=</span><span class="n">css_target</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
+    <span class="n">includes</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">doc_templates</span><span class="p">,</span> <span class="s2">&quot;includes&quot;</span><span class="p">)</span>
+    <span class="n">includes_tgt</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">doc_dir</span><span class="p">,</span> <span class="s2">&quot;includes&quot;</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">includes_tgt</span><span class="p">)</span>
+    <span class="n">copy_to</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">includes</span><span class="p">,</span> <span class="s2">&quot;api_css.rst&quot;</span><span class="p">),</span> <span class="n">write_to_dir</span><span class="o">=</span><span class="n">includes_tgt</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
+    <span class="c1"># Now for the modules/classes.txt</span>
+    <span class="n">modules_templates</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">doc_templates</span><span class="p">,</span> <span class="s2">&quot;modules&quot;</span><span class="p">)</span>
+    <span class="n">modules_target</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">doc_dir</span><span class="p">,</span> <span class="s2">&quot;modules&quot;</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">modules_target</span><span class="p">)</span>
+
+    <span class="n">read_write</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">modules_templates</span><span class="p">,</span> <span class="s2">&quot;classes.txt&quot;</span><span class="p">),</span>
+               <span class="n">write_to_dir</span><span class="o">=</span><span class="n">modules_target</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.rst&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+               <span class="n">bear_version</span><span class="o">=</span><span class="n">bear_version</span><span class="p">,</span> <span class="n">package_name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="make_package"><a class="viewcode-back" href="../../../modules/generated/bear.core.make_package.html#bear.core.make_package">[docs]</a><span class="k">def</span> <span class="nf">make_package</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">bear_location</span><span class="p">,</span> <span class="n">bear_version</span><span class="p">,</span>
+                 <span class="n">author</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="n">git_user</span><span class="p">,</span> <span class="n">license</span><span class="p">,</span>
+                 <span class="n">name</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">python</span><span class="p">,</span> <span class="n">requirements</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span>
+                 <span class="n">circle</span><span class="p">,</span> <span class="n">travis</span><span class="p">,</span> <span class="n">submodules</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Build the package.</span>
+
+<span class="sd">    For each template file in bear/templates, read the file in plain text,</span>
+<span class="sd">    format them with kwarg values and then write them into the new package</span>
+<span class="sd">    with the approprite suffix.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    header : str or unicode</span>
+<span class="sd">        The header to place in created templates. Attributes the creation to</span>
+<span class="sd">        Bear.</span>
+
+<span class="sd">    bear_location : str or unicode</span>
+<span class="sd">        The location of the Bear package on disk for finding templates.</span>
+
+<span class="sd">    bear_version : str or unicode</span>
+<span class="sd">        The version of Bear that created the package.</span>
+
+<span class="sd">    author : str or unicode</span>
+<span class="sd">        The author or the package. This is written in several places,</span>
+<span class="sd">        including the new project&#39;s setup.py.</span>
+
+<span class="sd">    description : str or unicode</span>
+<span class="sd">        The description for the package. This is written into the new</span>
+<span class="sd">        project&#39;s setup.py.</span>
+
+<span class="sd">    email : str or unicode</span>
+<span class="sd">        The author email. This is written into the project&#39;s setup.py to</span>
+<span class="sd">        be searchable on pypi.</span>
+
+<span class="sd">    git_user : str or unicode</span>
+<span class="sd">        The git username of the author.</span>
+
+<span class="sd">    license : str or unicode</span>
+<span class="sd">        The name of the license to use for the package. This will be</span>
+<span class="sd">        included in the setup.py</span>
+
+<span class="sd">    name : str or unicode</span>
+<span class="sd">        The name of the package</span>
+
+<span class="sd">    path : str or unicode</span>
+<span class="sd">        The absolute path to the location where the package will be created.</span>
+
+<span class="sd">    python : str or unicode</span>
+<span class="sd">        The required python version</span>
+
+<span class="sd">    requirements : str or unicode</span>
+<span class="sd">        The package requirements to be written in requirements.txt</span>
+
+<span class="sd">    version : str or unicode</span>
+<span class="sd">        The version of the package to build</span>
+
+<span class="sd">    c : bool</span>
+<span class="sd">        Whether C is required to build the package.</span>
+
+<span class="sd">    verbose : bool</span>
+<span class="sd">        Whether to build in verbose mode.</span>
+
+<span class="sd">    circle : bool</span>
+<span class="sd">        Whether to enable Circle CI tools</span>
+
+<span class="sd">    travis : bool</span>
+<span class="sd">        Whether to enable Travis CI tools</span>
+
+<span class="sd">    submodules : str, unicode or None</span>
+<span class="sd">        A comma-separated string of submodules to create within the package.</span>
+<span class="sd">        Default is None (no submodules).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Make the path for the project</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+    <span class="c1"># Project level</span>
+    <span class="n">templates</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">bear_location</span><span class="p">,</span> <span class="s2">&quot;templates&quot;</span><span class="p">)</span>
+    <span class="n">proj_level</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">templates</span><span class="p">,</span> <span class="s2">&quot;project_level&quot;</span><span class="p">)</span>
+    <span class="n">pkg_level</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">templates</span><span class="p">,</span> <span class="s2">&quot;package_level&quot;</span><span class="p">)</span>
+    <span class="n">ex_level</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">templates</span><span class="p">,</span> <span class="s2">&quot;examples&quot;</span><span class="p">)</span>
+    <span class="n">doc_level</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">proj_level</span><span class="p">,</span> <span class="s2">&quot;doc&quot;</span><span class="p">)</span>
+    <span class="n">ci_level</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">templates</span><span class="p">,</span> <span class="s2">&quot;build_tools&quot;</span><span class="p">)</span>
+
+    <span class="c1"># in case someone runs this on 12/31 11:59:59, capture this ONCE</span>
+    <span class="n">year</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">year</span><span class="p">)</span>
+
+    <span class="c1"># Create the top level of the project (not the package yet)</span>
+    <span class="n">_create_project_level</span><span class="p">(</span><span class="n">proj_level</span><span class="o">=</span><span class="n">proj_level</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+                          <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">bear_version</span><span class="o">=</span><span class="n">bear_version</span><span class="p">,</span>
+                          <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span> <span class="n">requirements</span><span class="o">=</span><span class="n">requirements</span><span class="p">,</span>
+                          <span class="n">header</span><span class="o">=</span><span class="n">header</span><span class="p">,</span> <span class="n">author</span><span class="o">=</span><span class="n">author</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="n">email</span><span class="p">,</span>
+                          <span class="n">python</span><span class="o">=</span><span class="n">python</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">git_user</span><span class="o">=</span><span class="n">git_user</span><span class="p">,</span>
+                          <span class="n">license</span><span class="o">=</span><span class="n">license</span><span class="p">,</span> <span class="n">year</span><span class="o">=</span><span class="n">year</span><span class="p">,</span> <span class="n">travis</span><span class="o">=</span><span class="n">travis</span><span class="p">)</span>
+
+    <span class="c1"># Now create the package-level</span>
+    <span class="n">_create_package_level</span><span class="p">(</span><span class="n">package_templates</span><span class="o">=</span><span class="n">pkg_level</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">c</span><span class="p">,</span>
+                          <span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+                          <span class="n">header</span><span class="o">=</span><span class="n">header</span><span class="p">,</span> <span class="n">submodules</span><span class="o">=</span><span class="n">submodules</span><span class="p">)</span>
+
+    <span class="c1"># Create the CI tools</span>
+    <span class="n">_create_ci_build_tools</span><span class="p">(</span><span class="n">ci_templates</span><span class="o">=</span><span class="n">ci_level</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+                           <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">proj_level</span><span class="o">=</span><span class="n">proj_level</span><span class="p">,</span>
+                           <span class="n">travis</span><span class="o">=</span><span class="n">travis</span><span class="p">,</span> <span class="n">circle</span><span class="o">=</span><span class="n">circle</span><span class="p">)</span>
+
+    <span class="c1"># Create the examples directory</span>
+    <span class="n">_create_examples_dir</span><span class="p">(</span><span class="n">examples_templates</span><span class="o">=</span><span class="n">ex_level</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
+                         <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="c1"># Create the documentation</span>
+    <span class="n">_create_doc</span><span class="p">(</span><span class="n">doc_templates</span><span class="o">=</span><span class="n">doc_level</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+                <span class="n">requirements</span><span class="o">=</span><span class="n">requirements</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+                <span class="n">bear_version</span><span class="o">=</span><span class="n">bear_version</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span>
+                <span class="n">year</span><span class="o">=</span><span class="n">year</span><span class="p">,</span> <span class="n">author</span><span class="o">=</span><span class="n">author</span><span class="p">,</span> <span class="n">git_user</span><span class="o">=</span><span class="n">git_user</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Taylor G Smith
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../../',
+              VERSION:'0.1.9',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

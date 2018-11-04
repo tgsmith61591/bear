@@ -1,0 +1,332 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>3. Bear Quickstart &mdash; bear 0.1.9 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/gallery.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/fields.css" type="text/css" />
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="4. Contributing to Bear" href="contributing.html" />
+    <link rel="prev" title="2. Setup" href="setup.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> bear
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.9
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="modules/classes.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="auto_examples/index.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="user_guide.html">User Guide</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="user_guide.html#getting-started">Getting started</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="about.html">1. About the project</a></li>
+<li class="toctree-l3"><a class="reference internal" href="setup.html">2. Setup</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">3. Bear Quickstart</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#command-line-interface">3.1. Command line interface</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#from-yaml-configuration">3.2. From YAML configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="contributing.html">4. Contributing to Bear</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide.html#api-reference">API reference</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="whats_new.html">What's New?</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">bear</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="user_guide.html">User Guide</a> &raquo;</li>
+        
+      <li>3. Bear Quickstart</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/quickstart.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="bear-quickstart">
+<span id="quickstart"></span><h1>3. Bear Quickstart<a class="headerlink" href="#bear-quickstart" title="Permalink to this headline">¶</a></h1>
+<p>As of v0.1.9, there are two modes for using Bear. <code class="docutils literal notranslate"><span class="pre">create</span></code> mode allows a user
+to specify project requirements on the commandline. <code class="docutils literal notranslate"><span class="pre">yaml</span></code> mode allows a user
+to build a package from a YAML configuration file.</p>
+<div class="section" id="command-line-interface">
+<h2>3.1. Command line interface<a class="headerlink" href="#command-line-interface" title="Permalink to this headline">¶</a></h2>
+<p>Building a package from the command line with Bear is simple. To run from the CLI,
+use the <code class="docutils literal notranslate"><span class="pre">bear</span> <span class="pre">create</span></code> directive:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m bear create ...
+</pre></div>
+</div>
+<p>There are numerous options available (all viewable with <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">bear</span> <span class="pre">create</span> <span class="pre">--help</span></code>).
+Here are a few examples of package configurations you could use:</p>
+<div class="section" id="a-simple-python-package-with-no-cython">
+<h3>3.1.1. A simple Python package with no Cython<a class="headerlink" href="#a-simple-python-package-with-no-cython" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m bear create --project_name simple_project
+</pre></div>
+</div>
+</div>
+<div class="section" id="a-python-package-with-cython-created-in-verbose-mode">
+<h3>3.1.2. A Python package with Cython (created in verbose mode)<a class="headerlink" href="#a-python-package-with-cython-created-in-verbose-mode" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m bear create <span class="se">\</span>
+    --project_name cython_project <span class="se">\</span>
+    --verbose <span class="se">\</span>
+    --c
+</pre></div>
+</div>
+</div>
+<div class="section" id="a-package-with-ci-configs-for-travis-and-circle-ci">
+<h3>3.1.3. A package with CI configs for Travis and Circle CI<a class="headerlink" href="#a-package-with-ci-configs-for-travis-and-circle-ci" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m bear create <span class="se">\</span>
+    --project_name cicd_project <span class="se">\</span>
+    --travis <span class="se">\</span>
+    --circle
+</pre></div>
+</div>
+</div>
+<div class="section" id="a-meticulously-designed-package">
+<span id="kafkaesque"></span><h3>3.1.4. A meticulously-designed package<a class="headerlink" href="#a-meticulously-designed-package" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m bear create <span class="se">\</span>
+    --project_name detailed_package <span class="se">\</span>
+    --author <span class="s2">&quot;Franz Kafka&quot;</span> <span class="se">\</span>
+    --description <span class="s2">&quot;A very detailed project&quot;</span> <span class="se">\</span>
+    --email <span class="s2">&quot;franz.kafka@kafkaesque.net&quot;</span> <span class="se">\</span>
+    --git_user <span class="s2">&quot;franzkafka1883&quot;</span> <span class="se">\</span>
+    --license MIT <span class="se">\</span>
+    --python <span class="s2">&quot;&gt;=3.5&quot;</span> <span class="se">\</span>
+    --path . <span class="se">\</span>
+    --submodules <span class="s2">&quot;utils,misc&quot;</span> <span class="se">\</span>
+    --requirements <span class="s2">&quot;scikit-learn,scipy,pandas&quot;</span> <span class="se">\</span>
+    --version <span class="s2">&quot;1.1.5&quot;</span> <span class="se">\</span>
+    --verbose <span class="se">\</span>
+    --c <span class="se">\</span>
+    --travis <span class="se">\</span>
+    --circle
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="from-yaml-configuration">
+<h2>3.2. From YAML configuration<a class="headerlink" href="#from-yaml-configuration" title="Permalink to this headline">¶</a></h2>
+<p>Anything you can build from the command line, you can build from a YAML config
+file (perhaps even more easily). Imagine we wanted to create the exact same
+“kafka-esque” example as above (as shown in <a class="reference internal" href="#kafkaesque"><span class="std std-ref">A meticulously-designed package</span></a>).</p>
+<p>Given the following YAML file:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># config.yml</span>
+<span class="l l-Scalar l-Scalar-Plain">project_name</span><span class="p p-Indicator">:</span> <span class="s">&quot;detailed_package&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">author</span><span class="p p-Indicator">:</span> <span class="s">&quot;Franz</span><span class="nv"> </span><span class="s">Kafka&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">description</span><span class="p p-Indicator">:</span> <span class="s">&quot;A</span><span class="nv"> </span><span class="s">very</span><span class="nv"> </span><span class="s">detailed</span><span class="nv"> </span><span class="s">project&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">email</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">franz.kafka@kafkaesque.net</span>
+<span class="l l-Scalar l-Scalar-Plain">git_user</span><span class="p p-Indicator">:</span> <span class="s">&quot;franzkafka1883&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">license</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">MIT</span>
+<span class="l l-Scalar l-Scalar-Plain">python</span><span class="p p-Indicator">:</span> <span class="s">&quot;&gt;=3.5&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">submodules</span><span class="p p-Indicator">:</span> <span class="s">&quot;utils,misc&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">requirements</span><span class="p p-Indicator">:</span> <span class="s">&quot;scikit-learn,</span><span class="nv"> </span><span class="s">scipy,</span><span class="nv"> </span><span class="s">pandas&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">version</span><span class="p p-Indicator">:</span> <span class="s">&quot;1.1.5&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">verbose</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="l l-Scalar l-Scalar-Plain">c</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="l l-Scalar l-Scalar-Plain">travis</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="l l-Scalar l-Scalar-Plain">circle</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+</div>
+<p>We can create the same exact package with the <code class="docutils literal notranslate"><span class="pre">bear</span> <span class="pre">yaml</span></code> directive:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m bear yaml --file config.yml
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="contributing.html" class="btn btn-neutral float-right" title="4. Contributing to Bear" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="setup.html" class="btn btn-neutral" title="2. Setup" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Taylor G Smith
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'./',
+              VERSION:'0.1.9',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

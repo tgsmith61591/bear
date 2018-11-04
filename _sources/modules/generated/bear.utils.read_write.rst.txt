@@ -1,0 +1,12 @@
+:mod:`bear.utils`.read_write
+=========================================
+
+.. currentmodule:: bear.utils
+
+.. autofunction:: read_write
+
+.. include:: bear.utils.read_write.examples
+
+.. raw:: html
+
+    <div class="clearer"></div>

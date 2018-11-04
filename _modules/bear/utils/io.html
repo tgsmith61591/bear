@@ -1,0 +1,328 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>bear.utils.io &mdash; bear 0.1.9 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/gallery.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/fields.css" type="text/css" />
+    <link rel="author" title="About these documents" href="../../../about.html" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> bear
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.9
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/classes.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../auto_examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../whats_new.html">What's New?</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">bear</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>bear.utils.io</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for bear.utils.io</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span>
+
+<span class="kn">from</span> <span class="nn">shutil</span> <span class="k">import</span> <span class="n">copyfile</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="k">import</span> <span class="n">join</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;copy_to&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;read_write&#39;</span>
+<span class="p">]</span>
+
+<span class="c1"># TODO: eventually get logger rather than print</span>
+
+
+<div class="viewcode-block" id="copy_to"><a class="viewcode-back" href="../../../modules/generated/bear.utils.copy_to.html#bear.utils.copy_to">[docs]</a><span class="k">def</span> <span class="nf">copy_to</span><span class="p">(</span><span class="n">copy_from_file</span><span class="p">,</span> <span class="n">write_to_dir</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Copy a template file elsewhere.</span>
+
+<span class="sd">    This executes a ``cp`` on a file into a new directory leaving the</span>
+<span class="sd">    original file intact.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    copy_from_file : str or unicode</span>
+<span class="sd">        The absolute path to the file that will be copied from the bear</span>
+<span class="sd">        templates directory.</span>
+
+<span class="sd">    write_to_dir : str or unicode</span>
+<span class="sd">        The absolute path to the file that will be written in the new</span>
+<span class="sd">        python package.</span>
+
+<span class="sd">    verbose : bool, optional (default=False)</span>
+<span class="sd">        Whether to print what&#39;s being written.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Get the filename</span>
+    <span class="n">file_name</span> <span class="o">=</span> <span class="n">copy_from_file</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">out_file_name</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">write_to_dir</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
+
+    <span class="c1"># Print it if needed</span>
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Formatting </span><span class="si">%s</span><span class="s2"> template into </span><span class="si">%s</span><span class="s2">&quot;</span>
+              <span class="o">%</span> <span class="p">(</span><span class="n">copy_from_file</span><span class="p">,</span> <span class="n">out_file_name</span><span class="p">))</span>
+
+    <span class="n">copyfile</span><span class="p">(</span><span class="n">copy_from_file</span><span class="p">,</span> <span class="n">out_file_name</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="read_write"><a class="viewcode-back" href="../../../modules/generated/bear.utils.read_write.html#bear.utils.read_write">[docs]</a><span class="k">def</span> <span class="nf">read_write</span><span class="p">(</span><span class="n">read_from_file</span><span class="p">,</span> <span class="n">write_to_dir</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+               <span class="n">overwrite_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Read a template and write it as a package file.</span>
+
+<span class="sd">    Loads a bear template file, formats it with the provided args and then</span>
+<span class="sd">    will write it to a package file with a provided suffix.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    read_from_file : str or unicode</span>
+<span class="sd">        The absolute path to the file that will be read from the bear</span>
+<span class="sd">        templates directory.</span>
+
+<span class="sd">    write_to_dir : str or unicode</span>
+<span class="sd">        The absolute path to the file that will be written in the new</span>
+<span class="sd">        python package.</span>
+
+<span class="sd">    suffix : str, unicode or None, optional (default=None)</span>
+<span class="sd">        The file extension for the new file that will be written.</span>
+
+<span class="sd">    verbose : bool, optional (default=False)</span>
+<span class="sd">        Whether to print what&#39;s being written.</span>
+
+<span class="sd">    overwrite_name : str, unicode or None, optional (default=None)</span>
+<span class="sd">        If you&#39;d like to overwrite the name of the file, this is the parameter</span>
+<span class="sd">        you&#39;d use. Note that this will override the ``suffix`` command.</span>
+
+<span class="sd">    **kwargs : keyword args or dict</span>
+<span class="sd">        The arguments used to format the file that&#39;s read in.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Read a file and write it to a location</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">read_from_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">read_in</span><span class="p">:</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="n">read_in</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">overwrite_name</span><span class="p">:</span>
+        <span class="c1"># Get the prefix of the file</span>
+        <span class="n">file_name</span> <span class="o">=</span> <span class="n">read_from_file</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># If the suffix is None, get a blank string. Otherwise ensure it</span>
+        <span class="c1"># starts with a &quot;.&quot;</span>
+        <span class="n">suffix</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">suffix</span> <span class="ow">is</span> <span class="kc">None</span> \
+            <span class="k">else</span> <span class="n">suffix</span> <span class="k">if</span> <span class="n">suffix</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span> \
+            <span class="k">else</span> <span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="n">suffix</span>
+
+        <span class="c1"># Get the name of the file without an extension (if one is present)</span>
+        <span class="n">last_dot_idx</span> <span class="o">=</span> <span class="n">file_name</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">last_dot_idx</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># e.g., something.txt</span>
+            <span class="n">file_no_extension</span> <span class="o">=</span> <span class="n">file_name</span><span class="p">[:</span><span class="n">last_dot_idx</span><span class="p">]</span> <span class="o">+</span> <span class="n">suffix</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># e.g., .coveragerc</span>
+            <span class="n">file_no_extension</span> <span class="o">=</span> <span class="n">file_name</span>
+
+        <span class="n">out_file_name</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">write_to_dir</span><span class="p">,</span> <span class="n">file_no_extension</span><span class="p">)</span>
+
+    <span class="c1"># If we&#39;re overwriting, we&#39;ll just take the name that&#39;s given</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">out_file_name</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">write_to_dir</span><span class="p">,</span> <span class="n">overwrite_name</span><span class="p">)</span>
+
+    <span class="c1"># Print it if needed</span>
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Formatting </span><span class="si">%s</span><span class="s2"> template into </span><span class="si">%s</span><span class="s2">&quot;</span>
+              <span class="o">%</span> <span class="p">(</span><span class="n">read_from_file</span><span class="p">,</span> <span class="n">out_file_name</span><span class="p">))</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">out_file_name</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">out</span><span class="p">:</span>
+        <span class="n">out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">content</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Taylor G Smith
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../../',
+              VERSION:'0.1.9',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

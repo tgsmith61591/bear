@@ -1,0 +1,12 @@
+:mod:`bear.core`.make_package
+==========================================
+
+.. currentmodule:: bear.core
+
+.. autofunction:: make_package
+
+.. include:: bear.core.make_package.examples
+
+.. raw:: html
+
+    <div class="clearer"></div>

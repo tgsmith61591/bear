@@ -1,0 +1,368 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>API Reference &mdash; bear 0.1.9 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/fields.css" type="text/css" />
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="bear.core.make_package" href="generated/bear.core.make_package.html" />
+    <link rel="prev" title="Bear: Speed up your project workflow" href="../index.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> bear
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.9
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#bear-core-core-bear-functionality"><code class="docutils literal notranslate"><span class="pre">bear.core</span></code>: Core Bear functionality</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#core-package-creation">Core package creation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/bear.core.make_package.html"><code class="docutils literal notranslate"><span class="pre">bear.core</span></code>.make_package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#bear-utils-utilities"><code class="docutils literal notranslate"><span class="pre">bear.utils</span></code>: Utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#io-utilities">IO utilities</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/bear.utils.copy_to.html"><code class="docutils literal notranslate"><span class="pre">bear.utils</span></code>.copy_to</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/bear.utils.read_write.html"><code class="docutils literal notranslate"><span class="pre">bear.utils</span></code>.read_write</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#validation-functions">Validation functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/bear.utils.validate_args.html"><code class="docutils literal notranslate"><span class="pre">bear.utils</span></code>.validate_args</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/bear.utils.validate_license.html"><code class="docutils literal notranslate"><span class="pre">bear.utils</span></code>.validate_license</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/bear.utils.validate_path.html"><code class="docutils literal notranslate"><span class="pre">bear.utils</span></code>.validate_path</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/bear.utils.validate_project_name.html"><code class="docutils literal notranslate"><span class="pre">bear.utils</span></code>.validate_project_name</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/bear.utils.validate_requirements.html"><code class="docutils literal notranslate"><span class="pre">bear.utils</span></code>.validate_requirements</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#yaml-parsing-functions">YAML-parsing functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/bear.utils.parse_yaml.html"><code class="docutils literal notranslate"><span class="pre">bear.utils</span></code>.parse_yaml</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../auto_examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../whats_new.html">What's New?</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">bear</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>API Reference</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/modules/classes.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="api-reference">
+<span id="api-ref"></span><h1>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this headline">¶</a></h1>
+<style type="text/css">
+    h1 {
+        /* margin: 0 -10px 0 -10px; */
+        text-align: center;
+        background-color: #cde8ef;
+        /* font-family: Helvetica, Arial, sans-serif; */
+        /* font-size: 190%; */
+        border-radius: 0 15px 0 15px;
+        -moz-border-radius: 0 15px 0 15px;
+        padding: 10px;
+    }
+
+    h2 {
+        background-color: #BED4EB;
+        border-radius: 10px;
+        padding: 10px;
+    }
+
+    h3 {
+        padding: 5px;
+        border-radius: 10px;
+        background-color: #eee;
+    }
+</style><p>This is the class and function reference for Bear. Please refer to
+the <a class="reference internal" href="../user_guide.html#user-guide"><span class="std std-ref">full user guide</span></a> for further details, as the class and
+function raw specifications may not be enough to give full guidelines on their
+uses.</p>
+<div class="section" id="bear-core-core-bear-functionality">
+<span id="core-ref"></span><h2><a class="reference internal" href="#module-bear.core" title="bear.core"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bear.core</span></code></a>: Core Bear functionality<a class="headerlink" href="#bear-core-core-bear-functionality" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">bear.core</span></code> sub-module defines the core functionality and templating
+behavior of the package.</p>
+<span class="target" id="module-bear.core"></span><div class="section" id="core-package-creation">
+<h3>Core package creation<a class="headerlink" href="#core-package-creation" title="Permalink to this headline">¶</a></h3>
+<p>There’s only one public method in the core submodule.</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="generated/bear.core.make_package.html#bear.core.make_package" title="bear.core.make_package"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.make_package</span></code></a>(header,&nbsp;bear_location,&nbsp;…)</td>
+<td>Build the package.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="bear-utils-utilities">
+<span id="utils-ref"></span><h2><a class="reference internal" href="#module-bear.utils" title="bear.utils"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bear.utils</span></code></a>: Utilities<a class="headerlink" href="#bear-utils-utilities" title="Permalink to this headline">¶</a></h2>
+<p>Utilities, IO and validation functions used across the package.</p>
+<span class="target" id="module-bear.utils"></span><div class="section" id="io-utilities">
+<h3>IO utilities<a class="headerlink" href="#io-utilities" title="Permalink to this headline">¶</a></h3>
+<p>Utilities for reading/copying templates and formatting them.</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="generated/bear.utils.copy_to.html#bear.utils.copy_to" title="bear.utils.copy_to"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.copy_to</span></code></a>(copy_from_file,&nbsp;write_to_dir)</td>
+<td>Copy a template file elsewhere.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/bear.utils.read_write.html#bear.utils.read_write" title="bear.utils.read_write"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.read_write</span></code></a>(read_from_file,&nbsp;write_to_dir)</td>
+<td>Read a template and write it as a package file.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="validation-functions">
+<h3>Validation functions<a class="headerlink" href="#validation-functions" title="Permalink to this headline">¶</a></h3>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="generated/bear.utils.validate_args.html#bear.utils.validate_args" title="bear.utils.validate_args"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.validate_args</span></code></a>(args)</td>
+<td>Get the validated args.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/bear.utils.validate_license.html#bear.utils.validate_license" title="bear.utils.validate_license"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.validate_license</span></code></a>(license)</td>
+<td>Validate the license.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/bear.utils.validate_path.html#bear.utils.validate_path" title="bear.utils.validate_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.validate_path</span></code></a>(path,&nbsp;name)</td>
+<td>Validate the location where the path will be written.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/bear.utils.validate_project_name.html#bear.utils.validate_project_name" title="bear.utils.validate_project_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.validate_project_name</span></code></a>(name)</td>
+<td>Validate the project name.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/bear.utils.validate_requirements.html#bear.utils.validate_requirements" title="bear.utils.validate_requirements"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.validate_requirements</span></code></a>(req,&nbsp;cython_required)</td>
+<td>Validate the package requirements.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="yaml-parsing-functions">
+<h3>YAML-parsing functions<a class="headerlink" href="#yaml-parsing-functions" title="Permalink to this headline">¶</a></h3>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="generated/bear.utils.parse_yaml.html#bear.utils.parse_yaml" title="bear.utils.parse_yaml"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.parse_yaml</span></code></a>(path,&nbsp;defaults)</td>
+<td>Parse the arguments from a YAML file.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="generated/bear.core.make_package.html" class="btn btn-neutral float-right" title="bear.core.make_package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../index.html" class="btn btn-neutral" title="Bear: Speed up your project workflow" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Taylor G Smith
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../',
+              VERSION:'0.1.9',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

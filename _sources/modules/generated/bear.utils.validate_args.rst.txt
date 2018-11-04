@@ -1,0 +1,12 @@
+:mod:`bear.utils`.validate_args
+============================================
+
+.. currentmodule:: bear.utils
+
+.. autofunction:: validate_args
+
+.. include:: bear.utils.validate_args.examples
+
+.. raw:: html
+
+    <div class="clearer"></div>
