@@ -46,9 +46,6 @@ jobs:
     docker:
     - image: python:3.6
     working_directory: ~/bear
-    branches:
-      only:
-        - master
     steps:
     - checkout
     - run: ./build_tools/circle/before_install.sh

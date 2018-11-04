@@ -12,12 +12,6 @@ fi
 # get the running branch
 branch=$(git symbolic-ref --short HEAD)
 
-# we only really want to do this from master
-if [[ ${branch} != "master" ]]; then
-    echo "This must be run from the master branch"
-    exit 5
-fi
-
 # cd into docs, make them
 cd doc
 make clean html EXAMPLES_PATTERN=ex_*
@@ -78,7 +72,11 @@ touch .nojekyll
 mv html/* ./
 rm -r html/
 
-# add everything, get ready for commit
-git add --all
-git commit -m "[ci skip] publishing updated documentation..."
-git push origin gh-pages
+# Add everything, get ready for commit. But only do it if we're on master
+if [[ "${CIRCLE_BRANCH}" =~ ^master$|^[0-9]+\.[0-9]+\.X$ ]]; then
+    git add --all
+    git commit -m "[ci skip] publishing updated documentation..."
+    git push origin gh-pages
+else
+    echo "Not on master, so won't push doc"
+fi
