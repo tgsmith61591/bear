@@ -38,14 +38,12 @@ git_user = "fakegituser"
 lic = "MIT"
 description = "This is a test pkg"
 
-# Call the make package (and then remove it)
-try:
+# Call the make package (but only on Circle)
+if os.environ.get("BUILD_EXAMPLES", "false") == "true":
     create.make_package(header="File header", bear_location=bear_location,
                         bear_version=bear_version, author=author,
-                        description=description, email=email, git_user=git_user,
-                        license=lic, name=package_name, path=path, python=python,
-                        requirements="numpy", version="1.0.0", c=False,
-                        verbose=True, circle=True, travis=True,
-                        submodules="utils")
-finally:
-    os.unlink(project_path)
+                        description=description, email=email,
+                        git_user=git_user, license=lic, name=package_name,
+                        path=path, python=python, requirements="numpy",
+                        version="1.0.0", c=False, verbose=True, circle=True,
+                        travis=True, submodules="utils")

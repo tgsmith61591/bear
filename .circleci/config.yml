@@ -46,6 +46,8 @@ jobs:
   deploy-doc:
     docker:
     - image: python:3.6
+    environment:
+      - BUILD_EXAMPLES: "true"
     working_directory: ~/bear
     steps:
     - checkout
