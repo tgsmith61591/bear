@@ -10,6 +10,26 @@ Examples for how to use Bear
 |
 
 
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip=" It&#x27;s unlikely you&#x27;d create a new package from within a Python script, but here is an example o...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_example_create_thumb.png
+
+        :ref:`sphx_glr_auto_examples_example_create.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/example_create
 .. raw:: html
 
     <div style='clear:both'></div>

@@ -1,0 +1,139 @@
+
+
+.. _sphx_glr_auto_examples_example_create.py:
+
+
+=====================
+Simple package create
+=====================
+
+
+It's unlikely you'd create a new package from within a Python script, but here
+is an example of how you can leverage the package internals for exactly that
+purpose.
+
+.. raw:: html
+
+   <br/>
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out::
+
+    Formatting /usr/local/lib/python3.6/site-packages/bear-0.1.10-py3.6.egg/bear/templates/project_level/.coveragerc template into bear_test_project_dir/bear_test/.coveragerc
+    Formatting /usr/local/lib/python3.6/site-packages/bear-0.1.10-py3.6.egg/bear/templates/project_level/.gitignore template into bear_test_project_dir/bear_test/.gitignore
+    Formatting /usr/local/lib/python3.6/site-packages/bear-0.1.10-py3.6.egg/bear/templates/project_level/.travis.txt template into bear_test_project_dir/bear_test/.travis.yml
+    Formatting /usr/local/lib/python3.6/site-packages/bear-0.1.10-py3.6.egg/bear/templates/project_level/MANIFEST.txt template into bear_test_project_dir/bear_test/MANIFEST.in
+    Formatting /usr/local/lib/python3.6/site-packages/bear-0.1.10-py3.6.egg/bear/templates/project_level/README.txt template into bear_test_project_dir/bear_test/README.md
+    Formatting /usr/local/lib/python3.6/site-packages/bear-0.1.10-py3.6.egg/bear/templates/project_level/requirements.txt template into bear_test_project_dir/bear_test/requirements.txt
+    Formatting /usr/local/lib/python3.6/site-packages/bear-0.1.10-py3.6.egg/bear/templates/project_level/setup.txt template into bear_test_project_dir/bear_test/setup.py
+    Formatting /usr/local/lib/python3.6/site-packages/bear-0.1.10-py3.6.egg/bear/templates/project_level/licenses/MIT template into bear_test_project_dir/bear_test/LICENSE
+    Formatting /usr/local/lib/python3.6/site-packages/bear-0.1.10-py3.6.egg/bear/templates/project_level/Makefile template into bear_test_project_dir/bear_test/Makefile
+    Formatting /usr/local/lib/python3.6/site-packages/bear-0.1.10-py3.6.egg/bear/templates/package_level/__init__.txt template into bear_test_project_dir/bear_test/bear_test/__init__.py
+    Formatting /usr/local/lib/python3.6/site-packages/bear-0.1.10-py3.6.egg/bear/templates/package_level/submodule_init_template.txt template into bear_test_project_dir/bear_test/bear_test/utils/__init__.py
+    Formatting /usr/local/lib/python3.6/site-packages/bear-0.1.10-py3.6.egg/bear/templates/package_level/__check_build/tests/__init__.py template into bear_test_project_dir/bear_test/bear_test/utils/tests/__init__.py
+    Formatting /usr/local/lib/python3.6/site-packages/bear-0.1.10-py3.6.egg/bear/templates/package_level/setup.txt template into bear_test_project_dir/bear_test/bear_test/setup.py
+    Formatting /usr/local/lib/python3.6/site-packages/bear-0.1.10-py3.6.egg/bear/templates/project_level/.circleci/config.txt template into bear_test_project_dir/bear_test/.circleci/config.yml
+    Formatting /usr/local/lib/python3.6/site-packages/bear-0.1.10-py3.6.egg/bear/templates/build_tools/circle/before_install.sh template into bear_test_project_dir/bear_test/build_tools/circle/before_install.sh
+    Formatting /usr/local/lib/python3.6/site-packages/bear-0.1.10-py3.6.egg/bear/templates/build_tools/circle/build_push_doc.txt template into bear_test_project_dir/bear_test/build_tools/circle/build_push_doc.sh
+    Formatting /usr/local/lib/python3.6/site-packages/bear-0.1.10-py3.6.egg/bear/templates/build_tools/circle/build_test_pypy.txt template into bear_test_project_dir/bear_test/build_tools/circle/build_test_pypy.sh
+    Formatting /usr/local/lib/python3.6/site-packages/bear-0.1.10-py3.6.egg/bear/templates/build_tools/travis/after_success.txt template into bear_test_project_dir/bear_test/build_tools/travis/after_success.sh
+    Formatting /usr/local/lib/python3.6/site-packages/bear-0.1.10-py3.6.egg/bear/templates/build_tools/travis/before_install.txt template into bear_test_project_dir/bear_test/build_tools/travis/before_install.sh
+    Formatting /usr/local/lib/python3.6/site-packages/bear-0.1.10-py3.6.egg/bear/templates/build_tools/travis/before_script.txt template into bear_test_project_dir/bear_test/build_tools/travis/before_script.sh
+    Formatting /usr/local/lib/python3.6/site-packages/bear-0.1.10-py3.6.egg/bear/templates/build_tools/travis/build_manywheels_linux.sh template into bear_test_project_dir/bear_test/build_tools/travis/build_manywheels_linux.sh
+    Formatting /usr/local/lib/python3.6/site-packages/bear-0.1.10-py3.6.egg/bear/templates/build_tools/travis/build_wheels.sh template into bear_test_project_dir/bear_test/build_tools/travis/build_wheels.sh
+    Formatting /usr/local/lib/python3.6/site-packages/bear-0.1.10-py3.6.egg/bear/templates/build_tools/travis/install.txt template into bear_test_project_dir/bear_test/build_tools/travis/install.sh
+    Formatting /usr/local/lib/python3.6/site-packages/bear-0.1.10-py3.6.egg/bear/templates/build_tools/travis/setup.cfg template into bear_test_project_dir/bear_test/build_tools/travis/setup.cfg
+    Formatting /usr/local/lib/python3.6/site-packages/bear-0.1.10-py3.6.egg/bear/templates/build_tools/travis/test_script.txt template into bear_test_project_dir/bear_test/build_tools/travis/test_script.sh
+    Formatting /usr/local/lib/python3.6/site-packages/bear-0.1.10-py3.6.egg/bear/templates/examples/README.txt template into bear_test_project_dir/bear_test/examples/README.txt
+    Formatting /usr/local/lib/python3.6/site-packages/bear-0.1.10-py3.6.egg/bear/templates/project_level/doc/make.txt template into bear_test_project_dir/bear_test/doc/make.bat
+    Formatting /usr/local/lib/python3.6/site-packages/bear-0.1.10-py3.6.egg/bear/templates/project_level/doc/Makefile template into bear_test_project_dir/bear_test/doc/Makefile
+    Formatting /usr/local/lib/python3.6/site-packages/bear-0.1.10-py3.6.egg/bear/templates/project_level/doc/setup.txt template into bear_test_project_dir/bear_test/doc/setup.rst
+    Formatting /usr/local/lib/python3.6/site-packages/bear-0.1.10-py3.6.egg/bear/templates/project_level/doc/about.txt template into bear_test_project_dir/bear_test/doc/about.rst
+    Formatting /usr/local/lib/python3.6/site-packages/bear-0.1.10-py3.6.egg/bear/templates/project_level/doc/user_guide.txt template into bear_test_project_dir/bear_test/doc/user_guide.rst
+    Formatting /usr/local/lib/python3.6/site-packages/bear-0.1.10-py3.6.egg/bear/templates/project_level/doc/conf.txt template into bear_test_project_dir/bear_test/doc/conf.py
+    Formatting /usr/local/lib/python3.6/site-packages/bear-0.1.10-py3.6.egg/bear/templates/project_level/doc/sphinxext/github_link.py template into bear_test_project_dir/bear_test/doc/sphinxext/github_link.py
+    Formatting /usr/local/lib/python3.6/site-packages/bear-0.1.10-py3.6.egg/bear/templates/project_level/doc/sphinxext/MANIFEST.in template into bear_test_project_dir/bear_test/doc/sphinxext/MANIFEST.in
+    Formatting /usr/local/lib/python3.6/site-packages/bear-0.1.10-py3.6.egg/bear/templates/project_level/doc/README.md template into bear_test_project_dir/bear_test/doc/README.md
+    Formatting /usr/local/lib/python3.6/site-packages/bear-0.1.10-py3.6.egg/bear/templates/project_level/doc/_templates/class.rst template into bear_test_project_dir/bear_test/doc/_templates/class.rst
+    Formatting /usr/local/lib/python3.6/site-packages/bear-0.1.10-py3.6.egg/bear/templates/project_level/doc/_templates/class_with_call.rst template into bear_test_project_dir/bear_test/doc/_templates/class_with_call.rst
+    Formatting /usr/local/lib/python3.6/site-packages/bear-0.1.10-py3.6.egg/bear/templates/project_level/doc/_templates/class_without_init.rst template into bear_test_project_dir/bear_test/doc/_templates/class_without_init.rst
+    Formatting /usr/local/lib/python3.6/site-packages/bear-0.1.10-py3.6.egg/bear/templates/project_level/doc/_templates/function.rst template into bear_test_project_dir/bear_test/doc/_templates/function.rst
+    Formatting /usr/local/lib/python3.6/site-packages/bear-0.1.10-py3.6.egg/bear/templates/project_level/doc/_templates/numpydoc_docstring.rst template into bear_test_project_dir/bear_test/doc/_templates/numpydoc_docstring.rst
+    Formatting /usr/local/lib/python3.6/site-packages/bear-0.1.10-py3.6.egg/bear/templates/project_level/doc/_static/css/style.css template into bear_test_project_dir/bear_test/doc/_static/css/style.css
+    Formatting /usr/local/lib/python3.6/site-packages/bear-0.1.10-py3.6.egg/bear/templates/project_level/doc/includes/api_css.rst template into bear_test_project_dir/bear_test/doc/includes/api_css.rst
+    Formatting /usr/local/lib/python3.6/site-packages/bear-0.1.10-py3.6.egg/bear/templates/project_level/doc/modules/classes.txt template into bear_test_project_dir/bear_test/doc/modules/classes.rst
+
+
+
+
+|
+
+
+.. code-block:: python
+
+    print(__doc__)
+
+    # Author: Taylor Smith <taylor.smith@alkaline-ml.com>
+
+    from bear.core import create
+    import bear
+    import datetime
+    from os.path import join
+    import os
+
+    # Attrs of the bear package
+    bear_location = bear.package_location()
+    bear_version = bear.__version__
+    year = str(datetime.datetime.now().year)
+
+    # Attrs of the TEST package we want to create
+    project_path = "bear_test_project_dir"
+    package_name = "bear_test"
+    path = join(project_path, package_name)
+    author = "Fake Authorman"
+    email = "some_email@fake.com"
+    python = "3.5"
+    git_user = "fakegituser"
+    lic = "MIT"
+    description = "This is a test pkg"
+
+    # Call the make package (but only on Circle)
+    if os.environ.get("BUILD_EXAMPLES", "false") == "true":
+        create.make_package(header="File header", bear_location=bear_location,
+                            bear_version=bear_version, author=author,
+                            description=description, email=email,
+                            git_user=git_user, license=lic, name=package_name,
+                            path=path, python=python, requirements="numpy",
+                            version="1.0.0", c=False, verbose=True, circle=True,
+                            travis=True, submodules="utils")
+
+**Total running time of the script:** ( 0 minutes  0.007 seconds)
+
+
+
+.. only :: html
+
+ .. container:: sphx-glr-footer
+
+
+  .. container:: sphx-glr-download
+
+     :download:`Download Python source code: example_create.py <example_create.py>`
+
+
+
+  .. container:: sphx-glr-download
+
+     :download:`Download Jupyter notebook: example_create.ipynb <example_create.ipynb>`
+
+
+.. only:: html
+
+ .. rst-class:: sphx-glr-signature
+
+    `Gallery generated by Sphinx-Gallery <https://sphinx-gallery.readthedocs.io>`_
