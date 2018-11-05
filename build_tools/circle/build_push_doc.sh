@@ -28,6 +28,7 @@ git stash
 if git rev-parse --verify origin/gh-pages > /dev/null 2>&1
 then
     git checkout gh-pages
+    git pull origin gh-pages
 else
     git checkout --orphan gh-pages
 fi
