@@ -338,12 +338,23 @@ def _create_ci_build_tools(ci_templates, path, name, verbose, c, proj_level,
         circleci = join(path, ".circleci")
         os.mkdir(circleci)
 
-        copy_to(join(proj_level, ".circleci", "config.yml"),
-                write_to_dir=circleci, verbose=verbose)
+        read_write(join(proj_level, ".circleci", "config.txt"),
+                   write_to_dir=circleci,
+                   suffix=".yml", verbose=verbose,
+                   package_name=name, branch="{{ .Branch }}",
+                   build_num="{{ .BuildNum }}")
 
         # Read/write the build_tools/circle/build_test_pypy.sh
         circle_target = join(build_tools, "circle")
         os.mkdir(circle_target)
+        copy_to(join(circle_level, "before_install.sh"),
+                write_to_dir=circle_target, verbose=verbose)
+
+        read_write(join(circle_level, "build_push_doc.txt"),
+                   write_to_dir=circle_target,
+                   suffix=".sh", verbose=verbose,
+                   package_name=name, leftover="${leftover[@]}")
+
         read_write(join(circle_level, "build_test_pypy.txt"),
                    write_to_dir=circle_target,
                    suffix=".sh", verbose=verbose,

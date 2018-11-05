@@ -54,7 +54,7 @@ You can do the same thing with a YAML file. To create the exact same package
 as above with a YAML file:
 
 ```yaml
-# config.yml
+config.txt
 path: .
 project_name: new_project
 git_user: newBearUser42
