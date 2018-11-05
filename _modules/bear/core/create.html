@@ -491,12 +491,23 @@
         <span class="n">circleci</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;.circleci&quot;</span><span class="p">)</span>
         <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">circleci</span><span class="p">)</span>
 
-        <span class="n">copy_to</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">proj_level</span><span class="p">,</span> <span class="s2">&quot;.circleci&quot;</span><span class="p">,</span> <span class="s2">&quot;config.yml&quot;</span><span class="p">),</span>
-                <span class="n">write_to_dir</span><span class="o">=</span><span class="n">circleci</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="n">read_write</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">proj_level</span><span class="p">,</span> <span class="s2">&quot;.circleci&quot;</span><span class="p">,</span> <span class="s2">&quot;config.txt&quot;</span><span class="p">),</span>
+                   <span class="n">write_to_dir</span><span class="o">=</span><span class="n">circleci</span><span class="p">,</span>
+                   <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.yml&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+                   <span class="n">package_name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">branch</span><span class="o">=</span><span class="s2">&quot;{{ .Branch }}&quot;</span><span class="p">,</span>
+                   <span class="n">build_num</span><span class="o">=</span><span class="s2">&quot;{{ .BuildNum }}&quot;</span><span class="p">)</span>
 
         <span class="c1"># Read/write the build_tools/circle/build_test_pypy.sh</span>
         <span class="n">circle_target</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">build_tools</span><span class="p">,</span> <span class="s2">&quot;circle&quot;</span><span class="p">)</span>
         <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">circle_target</span><span class="p">)</span>
+        <span class="n">copy_to</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">circle_level</span><span class="p">,</span> <span class="s2">&quot;before_install.sh&quot;</span><span class="p">),</span>
+                <span class="n">write_to_dir</span><span class="o">=</span><span class="n">circle_target</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
+        <span class="n">read_write</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">circle_level</span><span class="p">,</span> <span class="s2">&quot;build_push_doc.txt&quot;</span><span class="p">),</span>
+                   <span class="n">write_to_dir</span><span class="o">=</span><span class="n">circle_target</span><span class="p">,</span>
+                   <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.sh&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+                   <span class="n">package_name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">leftover</span><span class="o">=</span><span class="s2">&quot;$</span><span class="si">{leftover[@]}</span><span class="s2">&quot;</span><span class="p">)</span>
+
         <span class="n">read_write</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">circle_level</span><span class="p">,</span> <span class="s2">&quot;build_test_pypy.txt&quot;</span><span class="p">),</span>
                    <span class="n">write_to_dir</span><span class="o">=</span><span class="n">circle_target</span><span class="p">,</span>
                    <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.sh&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
