@@ -112,7 +112,7 @@ purpose.
                             version="1.0.0", c=False, verbose=True, circle=True,
                             travis=True, submodules="utils")
 
-**Total running time of the script:** ( 0 minutes  0.007 seconds)
+**Total running time of the script:** ( 0 minutes  0.008 seconds)
 
 
 
